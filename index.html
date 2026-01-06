@@ -86,6 +86,10 @@
       font-size: 13px;
       margin-bottom: 6px;
     }
+    .title{
+      font-weight: 700;
+      font-size: 16px;
+    }
     .big{
       font-size: 28px;
       font-weight: 800;
@@ -188,14 +192,9 @@
       padding: 12px 12px;
       font-size: 16px;
       outline: none;
+      box-sizing: border-box;
     }
     .input::placeholder{ color: rgba(255,255,255,.35); }
-
-    .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
 
     .nav{
       position: fixed;
@@ -225,19 +224,6 @@
       background: rgba(46,166,255,.14);
     }
 
-    .hint{
-      color: rgba(255,255,255,.45);
-      font-size: 12px;
-      margin-top: 8px;
-      line-height: 1.35;
-    }
-
-    .divider{
-      height: 1px;
-      background: var(--border);
-      margin: 10px 0;
-    }
-
     .loading{
       display:flex; gap:10px; align-items:center; color: var(--muted);
     }
@@ -253,124 +239,6 @@
       50%{ transform: scale(1.35); opacity: 1; }
     }
   
-    /* Analytics visuals */
-    .kpis{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .kpi{
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(0,0,0,.12);
-      border-radius: 16px;
-      padding: 12px;
-    }
-    .kpi .kpi-label{ font-size: 12px; color: var(--muted); }
-    .kpi .kpi-value{ font-size: 20px; font-weight: 800; margin-top: 6px; }
-    .kpi .kpi-sub{ font-size: 12px; color: var(--muted); margin-top: 6px; }
-
-    .donut-wrap{
-      display:grid;
-      grid-template-columns: 140px 1fr;
-      gap: 12px;
-      align-items:center;
-      margin-top: 10px;
-    }
-    .donut{
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      background: conic-gradient(rgba(255,255,255,.12) 0 360deg);
-      position: relative;
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: 0 10px 30px rgba(0,0,0,.18);
-    }
-    .donut::after{
-      content:'';
-      position:absolute;
-      inset: 16px;
-      border-radius: 50%;
-      background: rgba(15,20,27,.92);
-      border: 1px solid rgba(255,255,255,.08);
-    }
-    .donut-center{
-      position:absolute;
-      inset: 0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      z-index: 1;
-      pointer-events:none;
-      text-align:center;
-      padding: 0 14px;
-    }
-    .donut-center .dc-big{ font-weight: 900; font-size: 16px; }
-    .donut-center .dc-sub{ font-size: 12px; color: var(--muted); margin-top: 4px; }
-
-    .legend{
-      display:flex;
-      flex-direction:column;
-      gap: 8px;
-    }
-    .legend-row{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      padding: 8px 10px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.06);
-      background: rgba(0,0,0,.14);
-    }
-    .legend-left{
-      display:flex;
-      align-items:flex-start;
-      gap:10px;
-      min-width: 0;
-    }
-    .dotc{
-      width: 10px; height: 10px;
-      border-radius: 999px;
-      margin-top: 4px;
-      flex: 0 0 auto;
-      background: rgba(255,255,255,.30);
-      border: 1px solid rgba(255,255,255,.18);
-    }
-    .legend-name{
-      font-size: 13px;
-      font-weight: 700;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      max-width: 180px;
-    }
-    .legend-sub{
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-    .spark{
-      margin-top: 10px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.06);
-      background: rgba(0,0,0,.14);
-      padding: 10px;
-    }
-    .spark svg{ width: 100%; height: 70px; display:block; }
-    .spark .spark-meta{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .muted{ color: var(--muted); }
-
-  
-    /* ===== Analytics extras ===== */
     .kpi-row{ display:flex; gap:10px; margin-top:10px; }
     .kpi{ flex:1; background: rgba(255,255,255,.04); border:1px solid var(--border); border-radius: 14px; padding: 10px; }
     .kpi .k{ color: var(--muted); font-size: 12px; margin-bottom: 4px; }
@@ -419,10 +287,11 @@
     .lg-right{ text-align:right; display:flex; flex-direction:column; gap:4px; align-items:flex-end; }
     .lg-amt{ font-weight: 900; font-size: 13px; white-space:nowrap; }
 
-    .spark{ margin-top: 12px; }
-    .spark svg{ width: 100%; height: 64px; display:block; }
-    .spark .cap{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom: 6px; }
-    .spark .cap .label{ margin:0; }
+    .divider{
+      height: 1px;
+      background: var(--border);
+      margin: 10px 0;
+    }
 
   </style>
 </head>
@@ -438,45 +307,31 @@
   </div>
 
 <script>
-/* ======================================================
-   TELEGRAM INIT
-====================================================== */
+/* TELEGRAM INIT */
 const tg = window.Telegram?.WebApp;
 if (tg) {
   tg.expand();
-  const p = tg.themeParams || {};
-  if (p.bg_color) document.documentElement.style.setProperty('--bg', p.bg_color);
-  if (p.text_color) document.documentElement.style.setProperty('--text', p.text_color);
-  if (p.hint_color) document.documentElement.style.setProperty('--muted', p.hint_color);
-  if (p.button_color) document.documentElement.style.setProperty('--accent', p.button_color);
+  tg.ready();
 }
 
-/* ======================================================
-   🔌 API WEBHOOKS (ВСЕ С ПРЕФИКСОМ fin- И /webhook-test/)
-   Меняешь тут один раз — и всё.
-====================================================== */
+/* API CONFIG - ЗАМЕНИ НА СВОЙ N8N URL */
 const N8N_BASE = 'https://n8n.todobotmy.ru/webhook';
 
 const API = {
-  // У ТЕБЯ УЖЕ ЕСТЬ (GET):
   DASHBOARD: `${N8N_BASE}/fin-dashboard`,
-
-  // Заглушки под будущие n8n webhooks (переименуешь при необходимости):
   ANALYTICS: `${N8N_BASE}/fin-analytics`,
   RECENT: `${N8N_BASE}/fin-expenses-recent`,
   ADD_EXPENSE: `${N8N_BASE}/fin-expenses-add`,
-  UPDATE_EXPENSE: `${N8N_BASE}/fin-expenses-update`,
   DELETE_EXPENSE: `${N8N_BASE}/fin-expenses-delete`
 };
 
 const app = document.getElementById('app');
 
-/* ======================================================
-   HELPERS
-====================================================== */
+/* HELPERS */
 function setActiveTab(i){
   for (let k=0;k<4;k++){
-    document.getElementById('tab'+k).classList.toggle('active', k===i);
+    const btn = document.getElementById('tab'+k);
+    if (btn) btn.classList.toggle('active', k===i);
   }
 }
 
@@ -513,34 +368,17 @@ function loadingCard(text='Загрузка'){
   `;
 }
 
-function buildUrl(url, params){
-  const u = new URL(url);
-  Object.entries(params || {}).forEach(([k,v]) => {
-    if (v !== undefined && v !== null && v !== '') u.searchParams.set(k, String(v));
-  });
-  return u.toString();
-}
-
-
 function escapeHtml(str){
   const s = String(str ?? '');
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
 
 function unwrapN8n(x){
-  // n8n иногда отдаёт [ {...} ] вместо {...}
   if (Array.isArray(x)) return x[0] ?? {};
   return x ?? {};
 }
 
-function labelForPeriod(p){
-  if (p==='today') return 'Сегодня';
-  if (p==='week') return 'Неделя';
-  return 'Месяц';
-}
-
 function colorForIndex(i){
-  // стабильная палитра (HSL), чтобы donut выглядел одинаково
   const hue = (i * 57) % 360;
   return `hsl(${hue} 70% 55%)`;
 }
@@ -559,43 +397,28 @@ function buildDonutGradient(parts){
   return `conic-gradient(from -90deg, ${stops.join(',')})`;
 }
 
-function sparklineSvg(points){
-  const w = 320, h = 64, pad = 6;
-  const vals = (points || []).map(x => Number(x)||0);
-  const max = Math.max(1, ...vals);
-  const n = vals.length || 1;
-  const step = (w - pad*2) / Math.max(1, n-1);
-
-  const pts = vals.map((v, i) => {
-    const x = pad + step * i;
-    const y = (h - pad) - (v / max) * (h - pad*2);
-    return `${x.toFixed(2)},${y.toFixed(2)}`;
-  }).join(' ');
-
-  const area = `${pad},${h-pad} ${pts} ${w-pad},${h-pad}`;
-
-  return `
-    <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="График трат">
-      <polyline points="${area}" fill="rgba(46,166,255,.10)" stroke="none"></polyline>
-      <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
-    </svg>
-  `;
-}
-
-
-/**
- * GET: params идут в query string
- * POST: JSON body (для удобства n8n)
- * initData отправляем в заголовках всегда.
- */
 async function apiFetch(url, payload={}, opts={}){
   const initData = tg?.initData || '';
-  const method = (opts.method || 'POST').toUpperCase();
+  const method = (opts.method || 'GET').toUpperCase();
+  
+  const userId = tg?.initDataUnsafe?.user?.id;
 
-  const finalUrl = method === 'GET' ? buildUrl(url, {
-    ...payload,
-    telegram_user_id: tg?.initDataUnsafe?.user?.id
-  }) : url;
+  let finalUrl = url;
+  let body = undefined;
+
+  if (method === 'GET') {
+    const u = new URL(url);
+    Object.entries(payload).forEach(([k,v]) => {
+      if (v !== undefined && v !== null && v !== '') u.searchParams.set(k, String(v));
+    });
+    if (userId) u.searchParams.set('telegram_user_id', userId);
+    finalUrl = u.toString();
+  } else {
+    body = JSON.stringify({
+      ...payload,
+      telegram_user_id: userId
+    });
+  }
 
   const res = await fetch(finalUrl, {
     method,
@@ -604,11 +427,7 @@ async function apiFetch(url, payload={}, opts={}){
       'Authorization': initData,
       'X-Telegram-InitData': initData
     },
-    body: method === 'GET' ? undefined : JSON.stringify({
-      ...payload,
-      initData,
-      telegram_user_id: tg?.initDataUnsafe?.user?.id
-    })
+    body
   });
 
   if (!res.ok) {
@@ -622,15 +441,13 @@ async function apiFetch(url, payload={}, opts={}){
   try { return JSON.parse(text); } catch { return { raw: text }; }
 }
 
-/* ======================================================
-   STATE
-====================================================== */
-let period = 'month'; // today | week | month
+/* STATE */
+let period = 'month';
 let activeScreen = 'dashboard';
 
 function periodButtons(){
   return `
-    <div class="seg" role="tablist" aria-label="Период">
+    <div class="seg">
       <button class="${period==='today'?'active':''}" onclick="setPeriod('today')">Сегодня</button>
       <button class="${period==='week'?'active':''}" onclick="setPeriod('week')">Неделя</button>
       <button class="${period==='month'?'active':''}" onclick="setPeriod('month')">Месяц</button>
@@ -645,9 +462,7 @@ function setPeriod(p){
   if (activeScreen === 'recent') showRecent();
 }
 
-/* ======================================================
-   SCREEN: DASHBOARD (GET)
-====================================================== */
+/* DASHBOARD */
 async function showDashboard(){
   activeScreen = 'dashboard';
   setActiveTab(0);
@@ -657,22 +472,20 @@ async function showDashboard(){
       <div class="app-title">Расходы</div>
       ${periodButtons()}
     </div>
-    ${loadingCard('Dashboard')}
+    ${loadingCard('Загрузка...')}
   `;
 
   try {
-    // GET params — подстроишь под то, что ждёт твой fin-dashboard
     const params = {
-      period,               // today/week/month
-      date: nowISODate(),   // удобно для today/week
-      month: monthKey()     // удобно для month
+      period,
+      date: nowISODate(),
+      month: monthKey()
     };
 
     const data = unwrapN8n(await apiFetch(API.DASHBOARD, params, { method: 'GET' }));
 
     const currency = data.currency || '₽';
-    const budgets = Array.isArray(data.budgets) ? data.budgets : [];
-    const insight = data.insight || null;
+    const spent = Number(data.spent) || 0;
 
     app.innerHTML = `
       <div class="topbar">
@@ -681,59 +494,18 @@ async function showDashboard(){
       </div>
 
       <div class="card">
-        <div class="label">Потрачено (${period==='today'?'сегодня':period==='week'?'за неделю':'за месяц'})</div>
-        <div class="big">${fmtMoney(data.spent, currency)}</div>
-        ${data.forecast !== undefined ? `<div class="sub">Прогноз: ${fmtMoney(data.forecast, currency)}</div>` : ''}
+        <div class="label">Потрачено за период</div>
+        <div class="big">${fmtMoney(spent, currency)}</div>
+        ${data.forecast ? `<div class="sub">Прогноз: ${fmtMoney(data.forecast, currency)}</div>` : ''}
       </div>
 
-      ${
-        budgets.length ? `
-        <div class="card">
-          <div class="row">
-            <div>
-              <div class="title">Бюджеты</div>
-              <div class="sub">Быстрый статус по лимитам</div>
-            </div>
-            <span class="pill">по категориям</span>
-          </div>
-          <div class="list">
-            ${budgets.slice(0,5).map(b=>{
-              const pct = b.percent ?? (b.limit ? Math.round((b.spent/b.limit)*100) : null);
-              let cls = 'ok';
-              if (pct >= 100) cls = 'bad';
-              else if (pct >= 80) cls = 'warn';
-              return `
-                <div class="item">
-                  <div class="left">
-                    <div class="name">${b.category_name || b.category || 'Категория'}</div>
-                    <div class="meta">${fmtMoney(b.spent, currency)} из ${fmtMoney(b.limit, currency)}</div>
-                  </div>
-                  <div class="right">
-                    <span class="pill ${cls}">${pct !== null ? (pct + '%') : '—'}</span>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
-        ` : ''
-      }
-
-      ${
-        insight?.text ? `
-        <div class="card">
-          <div class="row">
-            <div>
-              <div class="title">Инсайт</div>
-              <div class="sub">${insight.text}</div>
-            </div>
-            <span class="pill">${insight.severity || 'info'}</span>
-          </div>
-        </div>
-        ` : ''
-      }
+      <div class="card">
+        <div class="title">Данные загружены</div>
+        <div class="sub">Бот работает, но нужно настроить n8n webhooks</div>
+      </div>
     `;
   } catch (e){
+    console.error('Dashboard error:', e);
     app.innerHTML = `
       <div class="topbar">
         <div class="app-title">Расходы</div>
@@ -741,18 +513,14 @@ async function showDashboard(){
       </div>
       <div class="card">
         <div class="title">Ошибка загрузки</div>
-        <div class="sub">${String(e.message || e)}</div>
-        <div class="divider"></div>
+        <div class="sub">${escapeHtml(String(e.message || e))}</div>
         <button class="btn" onclick="showDashboard()">Повторить</button>
       </div>
     `;
-    tg?.HapticFeedback?.notificationOccurred('error');
   }
 }
 
-/* ======================================================
-   SCREEN: ANALYTICS (GET)
-====================================================== */
+/* ANALYTICS */
 async function showAnalytics(){
   activeScreen = 'analytics';
   setActiveTab(1);
@@ -762,43 +530,14 @@ async function showAnalytics(){
       <div class="app-title">Аналитика</div>
       ${periodButtons()}
     </div>
-    ${loadingCard('Analytics')}
+    ${loadingCard('Загрузка аналитики...')}
   `;
 
   try{
-    const raw = await apiFetch(API.ANALYTICS, { period, date: nowISODate(), month: monthKey() }, { method: 'GET' }));
-    const data = unwrapN8n(raw);
+    const data = unwrapN8n(await apiFetch(API.ANALYTICS, { period, date: nowISODate(), month: monthKey() }, { method: 'GET' }));
 
     const currency = data.currency || '₽';
-    const catsRaw = Array.isArray(data.categories) ? data.categories : [];
-    const timeline = Array.isArray(data.timeline) ? data.timeline : [];
-    const topExpenses = Array.isArray(data.top_expenses) ? data.top_expenses : [];
-
-    const total = Number(data.total) || catsRaw.reduce((s,c)=> s + (Number(c.amount)||0), 0) || 0;
-    const prevTotal = (data.prev_total !== undefined && data.prev_total !== null) ? Number(data.prev_total) : null;
-
-    const catsSorted = catsRaw
-      .map(c => ({ name: String(c.name || c.category_name || '').trim() || 'Категория', amount: Number(c.amount)||0 }))
-      .filter(c => c.amount > 0)
-      .sort((a,b)=> b.amount - a.amount);
-
-    const topN = 5;
-    const catsTop = catsSorted.slice(0, topN);
-    const restSum = catsSorted.slice(topN).reduce((s,c)=> s + c.amount, 0);
-    if (restSum > 0) catsTop.push({ name: 'прочее', amount: restSum });
-
-    const donutParts = catsTop.map((c, i) => ({ ...c, color: colorForIndex(i) }));
-    const donutBg = buildDonutGradient(donutParts);
-
-    let delta = null, deltaPct = null;
-    if (prevTotal !== null && !Number.isNaN(prevTotal)){
-      delta = total - prevTotal;
-      if (prevTotal > 0) deltaPct = Math.round((delta / prevTotal) * 100);
-      else deltaPct = total > 0 ? 100 : 0;
-    }
-
-    const points = timeline.map(t => Number(t.amount)||0);
-    const spark = (timeline.length >= 2) ? sparklineSvg(points) : '';
+    const total = Number(data.total) || 0;
 
     app.innerHTML = `
       <div class="topbar">
@@ -807,103 +546,13 @@ async function showAnalytics(){
       </div>
 
       <div class="card">
-        <div class="label">Итого • ${labelForPeriod(period).toLowerCase()}</div>
+        <div class="label">Итого за период</div>
         <div class="big">${fmtMoney(total, currency)}</div>
-
-        ${
-          (prevTotal !== null && !Number.isNaN(prevTotal)) ? `
-          <div class="kpi-row">
-            <div class="kpi">
-              <div class="k">Прошлый период</div>
-              <div class="v">${fmtMoney(prevTotal, currency)}</div>
-            </div>
-            <div class="kpi">
-              <div class="k">Изменение</div>
-              <div class="v">
-                ${delta >= 0 ? '+' : ''}${fmtMoney(delta, currency)}
-                ${deltaPct !== null ? `<span class="pill ${delta > 0 ? 'warn' : (delta < 0 ? 'ok' : '')}" style="margin-left:8px;">${deltaPct >= 0 ? '+' : ''}${deltaPct}%</span>` : ''}
-              </div>
-            </div>
-          </div>` : ''
-        }
-
-        ${
-          total > 0 && donutParts.length ? `
-          <div class="donut-wrap">
-            <div class="donut" style="background:${donutBg}">
-              <div class="donut-center">
-                <div class="t">${fmtMoney(total, currency)}</div>
-                <div class="s">структура</div>
-              </div>
-            </div>
-
-            <div class="legend">
-              ${donutParts.map((c,i)=>{
-                const pct = total ? Math.round((c.amount / total) * 100) : 0;
-                return `
-                  <div class="lg-item">
-                    <div class="lg-left">
-                      <div class="lg-name">
-                        <span class="sw" style="background:${c.color}"></span>
-                        <span>${escapeHtml(c.name)}</span>
-                      </div>
-                      <div class="lg-meta">${pct}%</div>
-                    </div>
-                    <div class="lg-right">
-                      <div class="lg-amt">${fmtMoney(c.amount, currency)}</div>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>` : `<div class="sub" style="margin-top:10px;">Нет данных за период.</div>`
-        }
-
-        ${
-          spark ? `
-          <div class="spark">
-            <div class="cap">
-              <div class="label">Динамика по дням</div>
-              <span class="pill">spark</span>
-            </div>
-            ${spark}
-          </div>` : ''
-        }
+        <div class="sub">Аналитика в разработке</div>
       </div>
-
-      ${
-        topExpenses.length ? `
-        <div class="card">
-          <div class="row">
-            <div>
-              <div class="title">Крупные траты</div>
-              <div class="sub">Что сильнее всего двигает сумму</div>
-            </div>
-            <span class="pill">${topExpenses.slice(0,5).length} шт</span>
-          </div>
-
-          <div class="list">
-            ${topExpenses.slice(0,5).map(x=>{
-              const name = escapeHtml(x.description || 'Без описания');
-              const cat = escapeHtml(x.category_name || x.category || '');
-              const dt = escapeHtml(x.date || x.created_at || '');
-              return `
-                <div class="item">
-                  <div class="left">
-                    <div class="name">${name}</div>
-                    <div class="meta">${[cat, dt].filter(Boolean).join(' • ')}</div>
-                  </div>
-                  <div class="right">
-                    <div class="amt">${fmtMoney(x.amount, currency)}</div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        </div>` : ''
-      }
     `;
   } catch(e){
+    console.error('Analytics error:', e);
     app.innerHTML = `
       <div class="card">
         <div class="title">Аналитика недоступна</div>
@@ -914,10 +563,7 @@ async function showAnalytics(){
   }
 }
 
-
-/* ======================================================
-   SCREEN: ADD EXPENSE (под fin-expenses-add)
-====================================================== */
+/* ADD EXPENSE */
 function showAdd(){
   activeScreen = 'add';
   setActiveTab(2);
@@ -926,8 +572,7 @@ function showAdd(){
 
   app.innerHTML = `
     <div class="topbar">
-      <div class="app-title">Добавить</div>
-      <span class="pill">быстро</span>
+      <div class="app-title">Добавить трату</div>
     </div>
 
     <div class="card">
@@ -951,31 +596,38 @@ async function submitExpense(){
   const date = document.getElementById('date').value || nowISODate();
 
   if (!amount || Number(amount) <= 0){
-    tg?.showAlert('Введите сумму');
+    if (tg) tg.showAlert('Введите сумму');
+    else alert('Введите сумму');
     return;
   }
 
   try{
-    await apiFetch(API.ADD_EXPENSE, { amount: Number(amount), description, date }, { method: 'POST' }));
+    await apiFetch(API.ADD_EXPENSE, { amount: Number(amount), description, date }, { method: 'POST' });
 
-    tg?.HapticFeedback?.notificationOccurred('success');
-    tg?.showPopup({
-      title: 'Готово',
-      message: 'Трата сохранена',
-      buttons: [{ type: 'ok' }]
-    });
+    if (tg) {
+      tg.HapticFeedback?.notificationOccurred('success');
+      tg.showPopup({
+        title: 'Готово',
+        message: 'Трата сохранена',
+        buttons: [{ type: 'ok' }]
+      });
+    } else {
+      alert('Трата сохранена');
+    }
 
     showDashboard();
   } catch(e){
-    tg?.HapticFeedback?.notificationOccurred('error');
-    tg?.showAlert(`Ошибка: ${String(e.message || e)}`);
+    console.error('Submit error:', e);
+    if (tg) {
+      tg.HapticFeedback?.notificationOccurred('error');
+      tg.showAlert(`Ошибка: ${String(e.message || e)}`);
+    } else {
+      alert(`Ошибка: ${String(e.message || e)}`);
+    }
   }
 }
 
-
-/* ======================================================
-   SCREEN: RECENT (под fin-expenses-recent)
-====================================================== */
+/* RECENT */
 async function showRecent(){
   activeScreen = 'recent';
   setActiveTab(3);
@@ -985,11 +637,11 @@ async function showRecent(){
       <div class="app-title">Последние траты</div>
       ${periodButtons()}
     </div>
-    ${loadingCard('Recent')}
+    ${loadingCard('Загрузка трат...')}
   `;
 
   try{
-    const data = unwrapN8n(await apiFetch(API.RECENT, { period, date: nowISODate(), month: monthKey(), limit: 25 }, { method: 'POST' }));
+    const data = unwrapN8n(await apiFetch(API.RECENT, { period, date: nowISODate(), month: monthKey(), limit: 25 }, { method: 'GET' }));
     const currency = data.currency || '₽';
     const items = Array.isArray(data.expenses) ? data.expenses : (Array.isArray(data) ? data : []);
 
@@ -1003,7 +655,7 @@ async function showRecent(){
         <div class="row">
           <div>
             <div class="title">Список</div>
-            <div class="sub">Быстро удалить / проверить</div>
+            <div class="sub">Ваши траты за период</div>
           </div>
           <span class="pill">${items.length} шт</span>
         </div>
@@ -1012,9 +664,9 @@ async function showRecent(){
           ${
             items.length ? items.map(x=>{
               const id = x.id || x.expense_id || '';
-              const name = x.description || x.comment || 'Без описания';
-              const cat = x.category || x.category_name || '';
-              const dt = x.date || x.created_at || '';
+              const name = escapeHtml(x.description || x.comment || 'Без описания');
+              const cat = escapeHtml(x.category || x.category_name || '');
+              const dt = escapeHtml(x.date || x.created_at || '');
               return `
                 <div class="item">
                   <div class="left">
@@ -1033,10 +685,11 @@ async function showRecent(){
       </div>
     `;
   } catch(e){
+    console.error('Recent error:', e);
     app.innerHTML = `
       <div class="card">
         <div class="title">Не удалось загрузить</div>
-        <div class="sub">${String(e.message || e)}</div>
+        <div class="sub">${escapeHtml(String(e.message || e))}</div>
         <button class="btn" onclick="showRecent()">Повторить</button>
       </div>
     `;
@@ -1046,35 +699,37 @@ async function showRecent(){
 async function deleteExpense(id){
   if (!id) return;
 
-  if (tg){
-    tg.showPopup({
-      title: 'Удалить?',
-      message: 'Трата будет удалена',
-      buttons: [
-        { id: 'cancel', type: 'cancel', text: 'Отмена' },
-        { id: 'ok', type: 'destructive', text: 'Удалить' }
-      ]
-    }, async (btnId) => {
-      if (btnId !== 'ok') return;
-      try{
-        await apiFetch(API.DELETE_EXPENSE, { id }, { method: 'POST' }));
-        tg.HapticFeedback?.notificationOccurred('success');
-        showRecent();
-      } catch(e){
-        tg.HapticFeedback?.notificationOccurred('error');
-        tg.showAlert(`Ошибка: ${String(e.message || e)}`);
-      }
-    });
-  } else {
-    if (!confirm('Удалить трату?')) return;
-    await apiFetch(API.DELETE_EXPENSE, { id }, { method: 'POST' }));
+  const confirmed = tg 
+    ? await new Promise(resolve => {
+        tg.showPopup({
+          title: 'Удалить?',
+          message: 'Трата будет удалена',
+          buttons: [
+            { id: 'cancel', type: 'cancel', text: 'Отмена' },
+            { id: 'ok', type: 'destructive', text: 'Удалить' }
+          ]
+        }, btnId => resolve(btnId === 'ok'));
+      })
+    : confirm('Удалить трату?');
+
+  if (!confirmed) return;
+
+  try{
+    await apiFetch(API.DELETE_EXPENSE, { id }, { method: 'POST' });
+    if (tg) tg.HapticFeedback?.notificationOccurred('success');
     showRecent();
+  } catch(e){
+    console.error('Delete error:', e);
+    if (tg) {
+      tg.HapticFeedback?.notificationOccurred('error');
+      tg.showAlert(`Ошибка: ${String(e.message || e)}`);
+    } else {
+      alert(`Ошибка: ${String(e.message || e)}`);
+    }
   }
 }
 
-/* ======================================================
-   INIT
-====================================================== */
+/* INIT */
 showDashboard();
 </script>
 </body>
