@@ -212,6 +212,40 @@
       opacity: 0.5;
     }
 
+    /* Исправление для input date на мобильных устройствах */
+    .input[type="date"] {
+      -webkit-appearance: none;
+      appearance: none;
+      min-height: 44px; /* Минимальная высота для удобного тапа */
+    }
+    
+    /* Стили для WebKit браузеров (iOS, Chrome) */
+    .input[type="date"]::-webkit-calendar-picker-indicator {
+      background-size: 20px;
+      padding: 4px;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+    
+    /* Стили для Firefox */
+    .input[type="date"]::-moz-focus-inner {
+      border: 0;
+    }
+    
+    /* Адаптивные стили для маленьких экранов */
+    @media (max-width: 480px) {
+      .input[type="date"] {
+        font-size: 14px;
+        padding: 10px 12px;
+      }
+      
+      /* Убедимся, что модальное окно не выходит за пределы экрана */
+      .modal {
+        margin: 0 10px;
+        max-width: calc(100% - 20px);
+      }
+    }
+
     .grid2{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -293,6 +327,7 @@
     .kpi .kpi-value{ font-size: 20px; font-weight: 800; margin-top: 6px; }
     .kpi .kpi-sub{ font-size: 12px; color: var(--muted); margin-top: 6px; }
 
+    /* Улучшенный Donut с анимацией */
     .donut-wrap{
       display:grid;
       grid-template-columns: 140px 1fr;
@@ -304,10 +339,19 @@
       width: 140px;
       height: 140px;
       border-radius: 50%;
-      background: conic-gradient(var(--border) 0 360deg);
       position: relative;
       border: 1px solid var(--border);
       box-shadow: 0 10px 30px rgba(0,0,0,.08);
+      transform: rotate(-90deg); /* Начинаем с вершины */
+      animation: donutAppear 1s ease-out;
+    }
+    .donut-chart {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: absolute;
+      top: 0;
+      left: 0;
     }
     .donut::after{
       content:'';
@@ -316,6 +360,7 @@
       border-radius: 50%;
       background: var(--bg);
       border: 1px solid var(--border);
+      z-index: 1;
     }
     .donut-center{
       position:absolute;
@@ -324,13 +369,37 @@
       align-items:center;
       justify-content:center;
       flex-direction:column;
-      z-index: 1;
+      z-index: 2;
       pointer-events:none;
       text-align:center;
       padding: 0 14px;
+      transform: rotate(90deg); /* Возвращаем текст в исходное положение */
+      animation: textAppear 0.8s ease-out 0.3s both;
     }
     .donut-center .dc-big{ font-weight: 900; font-size: 16px; }
     .donut-center .dc-sub{ font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    @keyframes donutAppear {
+      0% {
+        transform: rotate(-90deg) scale(0.8);
+        opacity: 0;
+      }
+      100% {
+        transform: rotate(-90deg) scale(1);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes textAppear {
+      0% {
+        opacity: 0;
+        transform: rotate(90deg) translateY(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: rotate(90deg) translateY(0);
+      }
+    }
 
     .legend{
       display:flex;
@@ -437,11 +506,12 @@
     .donut{
       width: 140px; height: 140px;
       border-radius: 50%;
-      background: conic-gradient(from -90deg, var(--border) 0 360deg);
       position: relative;
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
       flex: 0 0 auto;
+      transform: rotate(-90deg);
+      animation: donutAppear 1s ease-out;
     }
     .donut::after{
       content:'';
@@ -450,6 +520,7 @@
       border-radius: 50%;
       background: var(--bg);
       border: 1px solid var(--border);
+      z-index: 1;
     }
     .donut-center{
       position:absolute;
@@ -462,13 +533,41 @@
       text-align:center;
       padding: 10px;
       pointer-events:none;
+      transform: rotate(90deg);
+      animation: textAppear 0.8s ease-out 0.3s both;
     }
     .donut-center .t{ font-weight: 900; font-size: 14px; }
     .donut-center .s{ color: var(--muted); font-size: 11px; margin-top: 4px; }
 
     .legend{ flex: 1; min-width: 0; }
-    .legend .lg-item{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding: 8px 0; border-top:1px solid var(--border); }
+    .legend .lg-item{ 
+      display:flex; 
+      align-items:flex-start; 
+      justify-content:space-between; 
+      gap:10px; 
+      padding: 8px 0; 
+      border-top:1px solid var(--border); 
+      animation: legendItemAppear 0.5s ease-out;
+      animation-fill-mode: both;
+    }
+    .legend .lg-item:nth-child(1) { animation-delay: 0.1s; }
+    .legend .lg-item:nth-child(2) { animation-delay: 0.2s; }
+    .legend .lg-item:nth-child(3) { animation-delay: 0.3s; }
+    .legend .lg-item:nth-child(4) { animation-delay: 0.4s; }
+    .legend .lg-item:nth-child(5) { animation-delay: 0.5s; }
     .legend .lg-item:first-child{ border-top:0; padding-top:0; }
+    
+    @keyframes legendItemAppear {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
     .lg-left{ display:flex; flex-direction:column; gap:3px; min-width: 0; }
     .lg-name{ display:flex; align-items:center; gap:8px; font-weight: 650; font-size: 14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .sw{ width:10px; height:10px; border-radius: 3px; flex:0 0 auto; margin-top: 3px; }
@@ -595,6 +694,56 @@
     .expense-high { color: #ff3b30; } /* Красный */
     .expense-neutral { color: var(--accent); } /* Акцентный цвет */
 
+    /* Сообщения об отсутствии данных */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+    
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    .empty-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+    
+    .empty-description {
+      font-size: 14px;
+      line-height: 1.4;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+
+    /* Улучшенная анимация sparkline */
+    .sparkline-path {
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      animation: drawSparkline 1.5s ease-out forwards;
+    }
+    
+    .sparkline-fill {
+      opacity: 0;
+      animation: fadeInFill 0.8s ease-out 0.5s forwards;
+    }
+    
+    @keyframes drawSparkline {
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+    
+    @keyframes fadeInFill {
+      to {
+        opacity: 0.1;
+      }
+    }
   </style>
 </head>
 
@@ -695,6 +844,11 @@ function showAddModal() {
   document.getElementById('modalAmount').value = '';
   document.getElementById('modalDescription').value = '';
   modal.style.display = 'flex';
+  
+  // Фокус на сумму
+  setTimeout(() => {
+    document.getElementById('modalAmount').focus();
+  }, 100);
 }
 
 function closeAddModal() {
@@ -785,18 +939,60 @@ function colorForIndex(i){
   return colors[i % colors.length];
 }
 
-function buildDonutGradient(parts){
-  const total = parts.reduce((s,p)=>s + (Number(p.amount)||0), 0) || 0;
-  if (!total) return `conic-gradient(from -90deg, var(--border) 0 360deg)`;
-  let acc = 0;
-  const stops = parts.map(p=>{
-    const a = Number(p.amount)||0;
-    const start = acc;
-    const deg = (a / total) * 360;
-    acc += deg;
-    return `${p.color} ${start.toFixed(2)}deg ${acc.toFixed(2)}deg`;
+// Улучшенная функция для создания donut с сегментами
+function buildDonutSegments(parts) {
+  const total = parts.reduce((s,p) => s + (Number(p.amount)||0), 0) || 0;
+  if (!total) return '';
+  
+  let accumulatedAngle = 0;
+  const svgParts = parts.map(p => {
+    const amount = Number(p.amount) || 0;
+    const percentage = amount / total;
+    const angle = percentage * 360;
+    
+    // Создаем круговой сегмент
+    const startAngle = accumulatedAngle;
+    const endAngle = startAngle + angle;
+    
+    // Преобразуем углы в радианы
+    const startRad = (startAngle - 90) * Math.PI / 180;
+    const endRad = (endAngle - 90) * Math.PI / 180;
+    
+    // Рассчитываем координаты для дуги
+    const radius = 70;
+    const innerRadius = 30;
+    
+    const x1 = 70 + radius * Math.cos(startRad);
+    const y1 = 70 + radius * Math.sin(startRad);
+    const x2 = 70 + radius * Math.cos(endRad);
+    const y2 = 70 + radius * Math.sin(endRad);
+    
+    const x3 = 70 + innerRadius * Math.cos(endRad);
+    const y3 = 70 + innerRadius * Math.sin(endRad);
+    const x4 = 70 + innerRadius * Math.cos(startRad);
+    const y4 = 70 + innerRadius * Math.sin(startRad);
+    
+    const largeArcFlag = angle > 180 ? 1 : 0;
+    
+    const path = [
+      `M ${x1} ${y1}`,
+      `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+      `L ${x3} ${y3}`,
+      `A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${x4} ${y4}`,
+      `Z`
+    ].join(' ');
+    
+    accumulatedAngle += angle;
+    
+    return `<path d="${path}" fill="${p.color}" stroke="var(--bg)" stroke-width="1" 
+                   style="transform-origin: 70px 70px; animation: segmentAppear 0.8s ease-out ${(startAngle/360)*0.5}s both;">`;
   });
-  return `conic-gradient(from -90deg, ${stops.join(',')})`;
+  
+  return `
+    <svg viewBox="0 0 140 140" class="donut-chart">
+      ${svgParts.join('')}
+    </svg>
+  `;
 }
 
 function sparklineSvg(points){
@@ -816,8 +1012,8 @@ function sparklineSvg(points){
 
   return `
     <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="График трат">
-      <polyline points="${area}" fill="rgba(46,166,255,.10)" stroke="none"></polyline>
-      <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+      <polyline points="${area}" fill="rgba(46,166,255,.10)" stroke="none" class="sparkline-fill"></polyline>
+      <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="sparkline-path"></polyline>
     </svg>
   `;
 }
@@ -990,6 +1186,15 @@ async function showDashboard(){
             <span class="pill">${escapeHtml(insight.severity || 'info')}</span>
           </div>
         </div>
+        ` : 
+        (!budgets.length && (!data.spent || data.spent === 0)) ? `
+        <div class="card">
+          <div class="empty-state">
+            <div class="empty-icon">📊</div>
+            <div class="empty-title">Пока нет данных</div>
+            <div class="empty-description">Начните добавлять траты, чтобы отслеживать свои расходы</div>
+          </div>
+        </div>
         ` : ''
       }
     `;
@@ -1060,7 +1265,6 @@ async function showAnalytics(){
       ...c, 
       color: colorForIndex(i) 
     }));
-    const donutBg = buildDonutGradient(donutParts);
 
     let delta = null, deltaPct = null;
     if (prevTotal !== null && !Number.isNaN(prevTotal)){
@@ -1105,7 +1309,8 @@ async function showAnalytics(){
         ${
           total > 0 && donutParts.length ? `
           <div class="donut-wrap">
-            <div class="donut" style="background:${donutBg}">
+            <div class="donut">
+              ${buildDonutSegments(donutParts)}
               <div class="donut-center">
                 <div class="t">${fmtMoney(total, currency)}</div>
                 <div class="s">структура</div>
@@ -1131,7 +1336,14 @@ async function showAnalytics(){
                 `;
               }).join('')}
             </div>
-          </div>` : `<div class="sub" style="margin-top:10px;">Нет данных за период.</div>`
+          </div>` : 
+          total === 0 ? `
+          <div class="empty-state" style="padding: 20px 0;">
+            <div class="empty-icon">📈</div>
+            <div class="empty-title">Нет данных за период</div>
+            <div class="empty-description">Добавьте траты за ${labelForPeriod(period).toLowerCase()}, чтобы увидеть статистику</div>
+          </div>
+          ` : ''
         }
 
         ${
@@ -1176,7 +1388,16 @@ async function showAnalytics(){
               `;
             }).join('')}
           </div>
-        </div>` : ''
+        </div>` : 
+        total > 0 ? `
+        <div class="card">
+          <div class="empty-state" style="padding: 20px 0;">
+            <div class="empty-icon">💰</div>
+            <div class="empty-title">Нет крупных трат</div>
+            <div class="empty-description">Все ваши расходы равномерно распределены</div>
+          </div>
+        </div>
+        ` : ''
       }
     `;
   } catch(e){
@@ -1200,7 +1421,7 @@ async function showAnalytics(){
 async function submitExpenseModal(){
   const amount = document.getElementById('modalAmount')?.value;
   const description = document.getElementById('modalDescription')?.value || '';
-  const date = document.getElementById('modalDate')?.value || nowISODate();
+  const dateStr = document.getElementById('modalDate')?.value || nowISODate();
 
   if (!amount || Number(amount) <= 0){
     tg?.showAlert('Введите сумму');
@@ -1208,10 +1429,32 @@ async function submitExpenseModal(){
   }
 
   try{
+    // Форматируем дату в требуемый формат: 2026-01-06T19:25:45.844027
+    const now = new Date();
+    const selectedDate = new Date(dateStr);
+    
+    // Создаем дату с выбранной датой и текущим временем
+    const finalDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate(),
+      now.getHours(),
+      now.getMinutes(),
+      now.getSeconds(),
+      now.getMilliseconds()
+    );
+    
+    // Форматируем в ISO строку и добавляем микросекунды
+    const isoString = finalDate.toISOString();
+    // Заменяем 'Z' на микросекунды (6 цифр)
+    const dateFormatted = isoString.replace('Z', 
+      String(finalDate.getMilliseconds()).padStart(3, '0') + '000'
+    ).replace('.000Z', '.000000');
+
     await apiFetch(API.ADD_EXPENSE, { 
       amount: Number(amount), 
       description, 
-      date 
+      date: dateFormatted
     }, { 
       method: 'POST' 
     });
@@ -1308,7 +1551,14 @@ async function showRecent(){
                   </div>
                 </div>
               `;
-            }).join('') : `<div class="sub">Пока пусто.</div>`
+            }).join('') : 
+            `
+            <div class="empty-state" style="padding: 20px 0;">
+              <div class="empty-icon">📝</div>
+              <div class="empty-title">Пока нет трат</div>
+              <div class="empty-description">Нажмите "+" чтобы добавить первую трату</div>
+            </div>
+            `
           }
         </div>
       </div>
