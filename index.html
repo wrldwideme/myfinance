@@ -369,6 +369,61 @@
     }
     .muted{ color: var(--muted); }
 
+  
+    /* ===== Analytics extras ===== */
+    .kpi-row{ display:flex; gap:10px; margin-top:10px; }
+    .kpi{ flex:1; background: rgba(255,255,255,.04); border:1px solid var(--border); border-radius: 14px; padding: 10px; }
+    .kpi .k{ color: var(--muted); font-size: 12px; margin-bottom: 4px; }
+    .kpi .v{ font-weight: 800; font-size: 15px; }
+
+    .donut-wrap{ display:flex; gap:14px; align-items:center; margin-top: 10px; }
+    .donut{
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      background: conic-gradient(from -90deg, rgba(255,255,255,.12) 0 360deg);
+      position: relative;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      flex: 0 0 auto;
+    }
+    .donut::after{
+      content:'';
+      position:absolute;
+      inset: 22%;
+      border-radius: 50%;
+      background: var(--card);
+      border: 1px solid var(--border);
+    }
+    .donut-center{
+      position:absolute;
+      inset: 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      z-index: 2;
+      text-align:center;
+      padding: 10px;
+      pointer-events:none;
+    }
+    .donut-center .t{ font-weight: 900; font-size: 14px; }
+    .donut-center .s{ color: var(--muted); font-size: 11px; margin-top: 4px; }
+
+    .legend{ flex: 1; min-width: 0; }
+    .legend .lg-item{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; padding: 8px 0; border-top:1px solid var(--border); }
+    .legend .lg-item:first-child{ border-top:0; padding-top:0; }
+    .lg-left{ display:flex; flex-direction:column; gap:3px; min-width: 0; }
+    .lg-name{ display:flex; align-items:center; gap:8px; font-weight: 650; font-size: 14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .sw{ width:10px; height:10px; border-radius: 3px; flex:0 0 auto; margin-top: 3px; }
+    .lg-meta{ color: var(--muted); font-size: 12px; }
+    .lg-right{ text-align:right; display:flex; flex-direction:column; gap:4px; align-items:flex-end; }
+    .lg-amt{ font-weight: 900; font-size: 13px; white-space:nowrap; }
+
+    .spark{ margin-top: 12px; }
+    .spark svg{ width: 100%; height: 64px; display:block; }
+    .spark .cap{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom: 6px; }
+    .spark .cap .label{ margin:0; }
+
   </style>
 </head>
 
@@ -466,6 +521,68 @@ function buildUrl(url, params){
   return u.toString();
 }
 
+
+function escapeHtml(str){
+  const s = String(str ?? '');
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function unwrapN8n(x){
+  // n8n иногда отдаёт [ {...} ] вместо {...}
+  if (Array.isArray(x)) return x[0] ?? {};
+  return x ?? {};
+}
+
+function labelForPeriod(p){
+  if (p==='today') return 'Сегодня';
+  if (p==='week') return 'Неделя';
+  return 'Месяц';
+}
+
+function colorForIndex(i){
+  // стабильная палитра (HSL), чтобы donut выглядел одинаково
+  const hue = (i * 57) % 360;
+  return `hsl(${hue} 70% 55%)`;
+}
+
+function buildDonutGradient(parts){
+  const total = parts.reduce((s,p)=>s + (Number(p.amount)||0), 0) || 0;
+  if (!total) return `conic-gradient(from -90deg, rgba(255,255,255,.12) 0 360deg)`;
+  let acc = 0;
+  const stops = parts.map(p=>{
+    const a = Number(p.amount)||0;
+    const start = acc;
+    const deg = (a / total) * 360;
+    acc += deg;
+    return `${p.color} ${start.toFixed(2)}deg ${acc.toFixed(2)}deg`;
+  });
+  return `conic-gradient(from -90deg, ${stops.join(',')})`;
+}
+
+function sparklineSvg(points){
+  const w = 320, h = 64, pad = 6;
+  const vals = (points || []).map(x => Number(x)||0);
+  const max = Math.max(1, ...vals);
+  const n = vals.length || 1;
+  const step = (w - pad*2) / Math.max(1, n-1);
+
+  const pts = vals.map((v, i) => {
+    const x = pad + step * i;
+    const y = (h - pad) - (v / max) * (h - pad*2);
+    return `${x.toFixed(2)},${y.toFixed(2)}`;
+  }).join(' ');
+
+  const area = `${pad},${h-pad} ${pts} ${w-pad},${h-pad}`;
+
+  return `
+    <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="График трат">
+      <polyline points="${area}" fill="rgba(46,166,255,.10)" stroke="none"></polyline>
+      <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+    </svg>
+  `;
+}
+
+
 /**
  * GET: params идут в query string
  * POST: JSON body (для удобства n8n)
@@ -551,7 +668,7 @@ async function showDashboard(){
       month: monthKey()     // удобно для month
     };
 
-    const data = await apiFetch(API.DASHBOARD, params, { method: 'GET' });
+    const data = unwrapN8n(await apiFetch(API.DASHBOARD, params, { method: 'GET' }));
 
     const currency = data.currency || '₽';
     const budgets = Array.isArray(data.budgets) ? data.budgets : [];
@@ -634,7 +751,7 @@ async function showDashboard(){
 }
 
 /* ======================================================
-   SCREEN: ANALYTICS (пока заглушка под твой будущий fin-analytics)
+   SCREEN: ANALYTICS (GET)
 ====================================================== */
 async function showAnalytics(){
   activeScreen = 'analytics';
@@ -649,94 +766,39 @@ async function showAnalytics(){
   `;
 
   try{
-    const data = await apiFetch(API.ANALYTICS, { period, date: nowISODate(), month: monthKey() }, { method: 'GET' });
+    const raw = await apiFetch(API.ANALYTICS, { period, date: nowISODate(), month: monthKey() }, { method: 'GET' }));
+    const data = unwrapN8n(raw);
+
     const currency = data.currency || '₽';
+    const catsRaw = Array.isArray(data.categories) ? data.categories : [];
+    const timeline = Array.isArray(data.timeline) ? data.timeline : [];
+    const topExpenses = Array.isArray(data.top_expenses) ? data.top_expenses : [];
 
-    // Categories
-    let cats = Array.isArray(data.categories) ? data.categories.slice() : [];
-    cats = cats
-      .map(c => ({ name: (c.name ?? c.category_name ?? 'Категория'), amount: Number(c.amount) || 0 }))
+    const total = Number(data.total) || catsRaw.reduce((s,c)=> s + (Number(c.amount)||0), 0) || 0;
+    const prevTotal = (data.prev_total !== undefined && data.prev_total !== null) ? Number(data.prev_total) : null;
+
+    const catsSorted = catsRaw
+      .map(c => ({ name: String(c.name || c.category_name || '').trim() || 'Категория', amount: Number(c.amount)||0 }))
       .filter(c => c.amount > 0)
-      .sort((a,b) => b.amount - a.amount);
+      .sort((a,b)=> b.amount - a.amount);
 
-    const total = (Number(data.total) || 0) || cats.reduce((s,c)=> s + c.amount, 0);
+    const topN = 5;
+    const catsTop = catsSorted.slice(0, topN);
+    const restSum = catsSorted.slice(topN).reduce((s,c)=> s + c.amount, 0);
+    if (restSum > 0) catsTop.push({ name: 'прочее', amount: restSum });
 
-    // Prev period comparison (optional)
-    const prevTotal = Number(data.prev_total);
-    const hasPrev = Number.isFinite(prevTotal);
-    const delta = hasPrev ? (total - prevTotal) : null;
-    const deltaPct = hasPrev ? (prevTotal > 0 ? Math.round((delta / prevTotal) * 100) : (total > 0 ? 100 : 0)) : null;
+    const donutParts = catsTop.map((c, i) => ({ ...c, color: colorForIndex(i) }));
+    const donutBg = buildDonutGradient(donutParts);
 
-    // Donut: top 5 + other
-    const MAX_SLICES = 5;
-    const top = cats.slice(0, MAX_SLICES);
-    const otherSum = cats.slice(MAX_SLICES).reduce((s,c)=> s + c.amount, 0);
-    const donutCats = otherSum > 0 ? [...top, { name: 'прочее', amount: otherSum }] : top;
-
-    // colors (light iOS-like)
-    const palette = [
-      'rgba(46,166,255,.90)',
-      'rgba(124,92,255,.85)',
-      'rgba(48,200,120,.85)',
-      'rgba(255,200,80,.85)',
-      'rgba(255,90,90,.80)',
-      'rgba(255,255,255,.35)'
-    ];
-
-    const safeTotal = total > 0 ? total : 1;
-    let acc = 0;
-    const stops = donutCats.map((c, i) => {
-      const frac = c.amount / safeTotal;
-      const start = acc;
-      acc += frac;
-      const a = Math.round(start * 360);
-      const b = Math.round(acc * 360);
-      const col = palette[i % palette.length];
-      return `${col} ${a}deg ${b}deg`;
-    }).join(', ');
-
-    const donutBg = total > 0
-      ? `conic-gradient(${stops})`
-      : `conic-gradient(rgba(255,255,255,.10) 0 360deg)`;
-
-    // Timeline (optional): [{date, amount}]
-    const timeline = Array.isArray(data.timeline) ? data.timeline
-      .map(p => ({ date: String(p.date || ''), amount: Number(p.amount) || 0 }))
-      .filter(p => p.date)
-      : [];
-
-    const points = timeline.map(p => p.amount);
-    const hasTimeline = points.length >= 2;
-
-    const avgPerDay = points.length ? Math.round(points.reduce((s,x)=>s+x,0) / points.length) : null;
-    const maxDay = points.length ? Math.max(...points) : null;
-
-    function sparklineSVG(values){
-      const w = 320, h = 70, pad = 6;
-      const maxV = Math.max(...values, 0);
-      const minV = Math.min(...values, 0);
-      const span = (maxV - minV) || 1;
-
-      const step = (w - pad*2) / (values.length - 1);
-      const pts = values.map((v, i) => {
-        const x = pad + i * step;
-        const y = pad + (h - pad*2) * (1 - ((v - minV) / span));
-        return [x,y];
-      });
-
-      const d = pts.map((p,i)=> (i===0 ? `M ${p[0].toFixed(2)} ${p[1].toFixed(2)}` : `L ${p[0].toFixed(2)} ${p[1].toFixed(2)}`)).join(' ');
-      const area = `${d} L ${(pad + (values.length - 1) * step).toFixed(2)} ${(h-pad).toFixed(2)} L ${pad.toFixed(2)} ${(h-pad).toFixed(2)} Z`;
-
-      return `
-        <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="График трат">
-          <path d="${area}" fill="rgba(46,166,255,.12)"></path>
-          <path d="${d}" fill="none" stroke="rgba(46,166,255,.85)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-      `;
+    let delta = null, deltaPct = null;
+    if (prevTotal !== null && !Number.isNaN(prevTotal)){
+      delta = total - prevTotal;
+      if (prevTotal > 0) deltaPct = Math.round((delta / prevTotal) * 100);
+      else deltaPct = total > 0 ? 100 : 0;
     }
 
-    // Drivers (optional): top_expenses
-    const topExpenses = Array.isArray(data.top_expenses) ? data.top_expenses.slice(0,5) : [];
+    const points = timeline.map(t => Number(t.amount)||0);
+    const spark = (timeline.length >= 2) ? sparklineSvg(points) : '';
 
     app.innerHTML = `
       <div class="topbar">
@@ -745,112 +807,86 @@ async function showAnalytics(){
       </div>
 
       <div class="card">
-        <div class="title">Итоги</div>
-        <div class="kpis">
-          <div class="kpi">
-            <div class="kpi-label">Всего • ${periodLabel(period).toLowerCase()}</div>
-            <div class="kpi-value">${fmtMoney(total, currency)}</div>
-            <div class="kpi-sub">${cats.length ? `${cats.length} катег.` : '—'}</div>
-          </div>
+        <div class="label">Итого • ${labelForPeriod(period).toLowerCase()}</div>
+        <div class="big">${fmtMoney(total, currency)}</div>
 
-          <div class="kpi">
-            <div class="kpi-label">Сравнение</div>
-            <div class="kpi-value">
-              ${
-                hasPrev
-                  ? `${delta >= 0 ? '+' : '−'}${fmtMoney(Math.abs(delta), currency)}`
-                  : '—'
-              }
+        ${
+          (prevTotal !== null && !Number.isNaN(prevTotal)) ? `
+          <div class="kpi-row">
+            <div class="kpi">
+              <div class="k">Прошлый период</div>
+              <div class="v">${fmtMoney(prevTotal, currency)}</div>
             </div>
-            <div class="kpi-sub">
-              ${
-                hasPrev
-                  ? `${deltaPct >= 0 ? '+' : '−'}${Math.abs(deltaPct)}% к прошлому периоду`
-                  : 'нет данных'
-              }
+            <div class="kpi">
+              <div class="k">Изменение</div>
+              <div class="v">
+                ${delta >= 0 ? '+' : ''}${fmtMoney(delta, currency)}
+                ${deltaPct !== null ? `<span class="pill ${delta > 0 ? 'warn' : (delta < 0 ? 'ok' : '')}" style="margin-left:8px;">${deltaPct >= 0 ? '+' : ''}${deltaPct}%</span>` : ''}
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </div>` : ''
+        }
 
-      <div class="card">
-        <div class="row">
-          <div>
-            <div class="title">Структура</div>
-            <div class="sub">Доли по категориям</div>
-          </div>
-          <span class="pill info">${donutCats.length ? `${donutCats.length} сегм.` : '—'}</span>
-        </div>
-
-        <div class="donut-wrap">
-          <div class="donut" style="background:${donutBg};">
-            <div class="donut-center">
-              <div class="dc-big">${total > 0 ? '100%' : '—'}</div>
-              <div class="dc-sub">${total > 0 ? 'за период' : 'нет трат'}</div>
+        ${
+          total > 0 && donutParts.length ? `
+          <div class="donut-wrap">
+            <div class="donut" style="background:${donutBg}">
+              <div class="donut-center">
+                <div class="t">${fmtMoney(total, currency)}</div>
+                <div class="s">структура</div>
+              </div>
             </div>
-          </div>
 
-          <div class="legend">
-            ${
-              donutCats.length ? donutCats.map((c,i)=>{
-                const pct = total > 0 ? Math.round((c.amount / total) * 100) : 0;
-                const col = palette[i % palette.length];
+            <div class="legend">
+              ${donutParts.map((c,i)=>{
+                const pct = total ? Math.round((c.amount / total) * 100) : 0;
                 return `
-                  <div class="legend-row">
-                    <div class="legend-left">
-                      <span class="dotc" style="background:${col};"></span>
-                      <div style="min-width:0;">
-                        <div class="legend-name">${c.name}</div>
-                        <div class="legend-sub">${pct}% • ${fmtMoney(c.amount, currency)}</div>
+                  <div class="lg-item">
+                    <div class="lg-left">
+                      <div class="lg-name">
+                        <span class="sw" style="background:${c.color}"></span>
+                        <span>${escapeHtml(c.name)}</span>
                       </div>
+                      <div class="lg-meta">${pct}%</div>
                     </div>
-                    <div class="amt">${pct}%</div>
+                    <div class="lg-right">
+                      <div class="lg-amt">${fmtMoney(c.amount, currency)}</div>
+                    </div>
                   </div>
                 `;
-              }).join('') : `<div class="sub">Пока нет данных.</div>`
-            }
-          </div>
-        </div>
-      </div>
-
-      ${
-        hasTimeline ? `
-        <div class="card">
-          <div class="row">
-            <div>
-              <div class="title">Динамика</div>
-              <div class="sub">Траты по дням</div>
+              }).join('')}
             </div>
-            <span class="pill">${periodLabel(period)}</span>
-          </div>
+          </div>` : `<div class="sub" style="margin-top:10px;">Нет данных за период.</div>`
+        }
 
+        ${
+          spark ? `
           <div class="spark">
-            ${sparklineSVG(points)}
-            <div class="spark-meta">
-              <div>среднее: <b>${avgPerDay !== null ? fmtMoney(avgPerDay, currency) : '—'}</b></div>
-              <div>пик: <b>${maxDay !== null ? fmtMoney(maxDay, currency) : '—'}</b></div>
+            <div class="cap">
+              <div class="label">Динамика по дням</div>
+              <span class="pill">spark</span>
             </div>
-          </div>
-        </div>
-        ` : ''
-      }
+            ${spark}
+          </div>` : ''
+        }
+      </div>
 
       ${
         topExpenses.length ? `
         <div class="card">
           <div class="row">
             <div>
-              <div class="title">Драйверы</div>
-              <div class="sub">Самые крупные траты</div>
+              <div class="title">Крупные траты</div>
+              <div class="sub">Что сильнее всего двигает сумму</div>
             </div>
-            <span class="pill">${topExpenses.length} шт</span>
+            <span class="pill">${topExpenses.slice(0,5).length} шт</span>
           </div>
 
           <div class="list">
-            ${topExpenses.map(x=>{
-              const name = x.description || x.comment || 'Без описания';
-              const cat = x.category_name || x.category || '';
-              const dt = x.date || x.created_at || '';
+            ${topExpenses.slice(0,5).map(x=>{
+              const name = escapeHtml(x.description || 'Без описания');
+              const cat = escapeHtml(x.category_name || x.category || '');
+              const dt = escapeHtml(x.date || x.created_at || '');
               return `
                 <div class="item">
                   <div class="left">
@@ -864,20 +900,20 @@ async function showAnalytics(){
               `;
             }).join('')}
           </div>
-        </div>
-        ` : ''
+        </div>` : ''
       }
     `;
   } catch(e){
     app.innerHTML = `
       <div class="card">
         <div class="title">Аналитика недоступна</div>
-        <div class="sub">${String(e.message || e)}</div>
+        <div class="sub">${escapeHtml(String(e.message || e))}</div>
         <button class="btn" onclick="showAnalytics()">Повторить</button>
       </div>
     `;
   }
 }
+
 
 /* ======================================================
    SCREEN: ADD EXPENSE (под fin-expenses-add)
@@ -920,7 +956,7 @@ async function submitExpense(){
   }
 
   try{
-    await apiFetch(API.ADD_EXPENSE, { amount: Number(amount), description, date }, { method: 'POST' });
+    await apiFetch(API.ADD_EXPENSE, { amount: Number(amount), description, date }, { method: 'POST' }));
 
     tg?.HapticFeedback?.notificationOccurred('success');
     tg?.showPopup({
@@ -935,6 +971,7 @@ async function submitExpense(){
     tg?.showAlert(`Ошибка: ${String(e.message || e)}`);
   }
 }
+
 
 /* ======================================================
    SCREEN: RECENT (под fin-expenses-recent)
@@ -952,7 +989,7 @@ async function showRecent(){
   `;
 
   try{
-    const data = await apiFetch(API.RECENT, { period, date: nowISODate(), month: monthKey(), limit: 25 }, { method: 'POST' });
+    const data = unwrapN8n(await apiFetch(API.RECENT, { period, date: nowISODate(), month: monthKey(), limit: 25 }, { method: 'POST' }));
     const currency = data.currency || '₽';
     const items = Array.isArray(data.expenses) ? data.expenses : (Array.isArray(data) ? data : []);
 
@@ -1020,7 +1057,7 @@ async function deleteExpense(id){
     }, async (btnId) => {
       if (btnId !== 'ok') return;
       try{
-        await apiFetch(API.DELETE_EXPENSE, { id }, { method: 'POST' });
+        await apiFetch(API.DELETE_EXPENSE, { id }, { method: 'POST' }));
         tg.HapticFeedback?.notificationOccurred('success');
         showRecent();
       } catch(e){
@@ -1030,7 +1067,7 @@ async function deleteExpense(id){
     });
   } else {
     if (!confirm('Удалить трату?')) return;
-    await apiFetch(API.DELETE_EXPENSE, { id }, { method: 'POST' });
+    await apiFetch(API.DELETE_EXPENSE, { id }, { method: 'POST' }));
     showRecent();
   }
 }
