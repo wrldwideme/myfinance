@@ -2,34 +2,31 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Expenses Mini App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>MyFinance</title>
   <style>
     :root{
-      --bg: #0b0b0f;
-      --card: #1c1c1e;
-      --muted: rgba(255,255,255,.65);
-      --text: #ffffff;
-      --border: rgba(255,255,255,.08);
+      --bg: #0f141b;
+      --card: rgba(255,255,255,.06);
+      --text: rgba(255,255,255,.94);
+      --muted: rgba(255,255,255,.55);
+      --border: rgba(255,255,255,.10);
       --accent: #2ea6ff;
+      --radius: 20px;
       --shadow: 0 10px 30px rgba(0,0,0,.25);
-      --radius: 16px;
     }
-
-    html, body {
+    *{ box-sizing: border-box; }
+    html,body{
       height: 100%;
       margin: 0;
-      background: var(--bg);
+      background: radial-gradient(1200px 900px at 40% -200px, rgba(46,166,255,.25), transparent 55%),
+                  linear-gradient(180deg, rgba(255,255,255,.04), transparent 25%),
+                  var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    .wrap { padding: 14px 14px 88px; }
+    .wrap { padding: 14px 14px 88px; max-width: 520px; margin: 0 auto; }
 
     .topbar{
       display:flex;
@@ -39,31 +36,33 @@
       margin: 6px 0 12px;
     }
     .app-title{
+      font-size: 22px;
       font-weight: 700;
-      font-size: 18px;
       letter-spacing: .2px;
     }
 
     .seg{
       display:flex;
-      gap:6px;
-      background: rgba(255,255,255,.06);
-      border:1px solid var(--border);
-      padding: 6px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.05);
       border-radius: 999px;
+      padding: 3px;
+      gap: 3px;
+      overflow: hidden;
     }
     .seg button{
-      border:0;
+      border: none;
       background: transparent;
-      color: var(--muted);
-      padding: 8px 10px;
+      color: rgba(255,255,255,.62);
+      font-size: 12px;
+      padding: 6px 10px;
       border-radius: 999px;
-      font-size: 13px;
       cursor:pointer;
     }
     .seg button.active{
-      background: rgba(255,255,255,.10);
+      background: rgba(255,255,255,.12);
       color: var(--text);
+      box-shadow: 0 6px 18px rgba(0,0,0,.18);
     }
 
     .card{
@@ -77,106 +76,90 @@
 
     .row{
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
-      gap: 12px;
+      gap:10px;
     }
+
     .label{
+      font-size: 12px;
       color: var(--muted);
-      font-size: 13px;
       margin-bottom: 6px;
     }
-    .big{
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: .2px;
-      line-height: 1.1;
+
+    .title{
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 2px;
     }
     .sub{
+      font-size: 12px;
       color: var(--muted);
-      font-size: 13px;
-      margin-top: 6px;
+      line-height: 1.35;
+    }
+    .big{
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: .2px;
+      margin-top: 4px;
     }
 
     .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
+      font-size: 12px;
       padding: 6px 10px;
       border-radius: 999px;
       background: rgba(255,255,255,.08);
       border:1px solid var(--border);
-      color: var(--muted);
-      font-size: 12px;
+      color: rgba(255,255,255,.78);
       white-space: nowrap;
     }
-    .pill.warn{ color: #ffd479; }
-    .pill.ok{ color: #8cffb1; }
-    .pill.bad{ color: #ff8c8c; }
+    .pill.ok{ border-color: rgba(48, 200, 120, .35); background: rgba(48,200,120,.14); }
+    .pill.warn{ border-color: rgba(255, 200, 80, .35); background: rgba(255,200,80,.14); }
+    .pill.bad{ border-color: rgba(255, 90, 90, .35); background: rgba(255,90,90,.14); }
+    .pill.info{ border-color: rgba(46,166,255,.35); background: rgba(46,166,255,.14); }
 
-    .list{ margin-top: 6px; }
+    .list{ margin-top: 10px; display:flex; flex-direction:column; gap: 10px; }
     .item{
       display:flex;
+      align-items:flex-start;
       justify-content:space-between;
-      gap:10px;
-      padding: 10px 0;
-      border-top: 1px solid var(--border);
+      gap: 10px;
+      padding: 10px 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.06);
+      background: rgba(0,0,0,.14);
     }
-    .item:first-child{ border-top: 0; }
-    .item .left{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      min-width: 0;
-    }
-    .item .name{
-      font-size: 14px;
-      font-weight: 600;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      max-width: 230px;
-    }
-    .item .meta{
-      color: var(--muted);
-      font-size: 12px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .item .right{
-      text-align:right;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      align-items:flex-end;
-    }
-    .amt{
-      font-weight: 800;
-      font-size: 14px;
-    }
-    .mini-btn{
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      color: var(--muted);
-      padding: 6px 10px;
-      border-radius: 10px;
-      font-size: 12px;
-      cursor:pointer;
-    }
-    .mini-btn.danger{ color: #ff9a9a; }
+    .item .name{ font-size: 14px; font-weight: 700; }
+    .item .meta{ margin-top: 2px; font-size: 12px; color: rgba(255,255,255,.55); }
+    .item .amt{ font-weight: 800; font-size: 14px; white-space: nowrap; }
 
     .btn{
       width: 100%;
-      border:0;
-      background: var(--accent);
-      color: #001018;
-      font-weight: 800;
+      border: none;
+      border-radius: 16px;
       padding: 14px 14px;
-      border-radius: 14px;
-      cursor:pointer;
+      margin-top: 12px;
+      background: rgba(46,166,255,.85);
+      color: #06111a;
       font-size: 16px;
-      margin-top: 10px;
+      font-weight: 800;
+      cursor:pointer;
+    }
+    .btn:active{ transform: translateY(1px); opacity: .95; }
+
+    .mini-btn{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.85);
+      border-radius: 12px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor:pointer;
+      margin-top: 8px;
+    }
+    .mini-btn.danger{
+      border-color: rgba(255,90,90,.35);
+      background: rgba(255,90,90,.12);
     }
 
     .input{
@@ -193,8 +176,30 @@
 
     .grid2{
       display:grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.35fr .65fr;
       gap: 10px;
+      align-items: end;
+    }
+
+    .divider{
+      height: 1px;
+      background: var(--border);
+      margin: 10px 0;
+    }
+
+    .loading{
+      display:flex; gap:10px; align-items:center; color: var(--muted);
+    }
+    .dot{
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      animation: pulse 1s infinite ease-in-out;
+    }
+    .dot:nth-child(2){ animation-delay: .15s; }
+    .dot:nth-child(3){ animation-delay: .3s; }
+    @keyframes pulse{
+      0%,100%{ transform: scale(1); opacity: .5; }
+      50%{ transform: scale(1.35); opacity: 1; }
     }
 
     .nav{
@@ -224,34 +229,6 @@
       border-color: rgba(46,166,255,.35);
       background: rgba(46,166,255,.14);
     }
-
-    .hint{
-      color: rgba(255,255,255,.45);
-      font-size: 12px;
-      margin-top: 8px;
-      line-height: 1.35;
-    }
-
-    .divider{
-      height: 1px;
-      background: var(--border);
-      margin: 10px 0;
-    }
-
-    .loading{
-      display:flex; gap:10px; align-items:center; color: var(--muted);
-    }
-    .dot{
-      width: 8px; height: 8px; border-radius: 50%;
-      background: rgba(255,255,255,.25);
-      animation: pulse 1s infinite ease-in-out;
-    }
-    .dot:nth-child(2){ animation-delay: .15s; }
-    .dot:nth-child(3){ animation-delay: .3s; }
-    @keyframes pulse{
-      0%,100%{ transform: scale(1); opacity: .5; }
-      50%{ transform: scale(1.35); opacity: 1; }
-    }
   </style>
 </head>
 
@@ -280,16 +257,13 @@ if (tg) {
 }
 
 /* ======================================================
-   🔌 API WEBHOOKS (ВСЕ С ПРЕФИКСОМ fin- И /webhook-test/)
+   🔌 API WEBHOOKS (префикс fin-)
    Меняешь тут один раз — и всё.
 ====================================================== */
 const N8N_BASE = 'https://n8n.todobotmy.ru/webhook';
 
 const API = {
-  // У ТЕБЯ УЖЕ ЕСТЬ (GET):
   DASHBOARD: `${N8N_BASE}/fin-dashboard`,
-
-  // Заглушки под будущие n8n webhooks (переименуешь при необходимости):
   ANALYTICS: `${N8N_BASE}/fin-analytics`,
   RECENT: `${N8N_BASE}/fin-expenses-recent`,
   ADD_EXPENSE: `${N8N_BASE}/fin-expenses-add`,
@@ -321,6 +295,12 @@ function nowISODate(){
   const mm = String(d.getMonth()+1).padStart(2,'0');
   const dd = String(d.getDate()).padStart(2,'0');
   return `${yyyy}-${mm}-${dd}`;
+}
+
+function periodLabel(p){
+  if (p==='today') return 'Сегодня';
+  if (p==='week') return 'Неделя';
+  return 'Месяц';
 }
 
 function monthKey(){
@@ -427,11 +407,10 @@ async function showDashboard(){
   `;
 
   try {
-    // GET params — подстроишь под то, что ждёт твой fin-dashboard
     const params = {
-      period,               // today/week/month
-      date: nowISODate(),   // удобно для today/week
-      month: monthKey()     // удобно для month
+      period,
+      date: nowISODate(),
+      month: monthKey()
     };
 
     const data = await apiFetch(API.DASHBOARD, params, { method: 'GET' });
@@ -498,11 +477,6 @@ async function showDashboard(){
         </div>
         ` : ''
       }
-
-      <div class="hint">
-        Dashboard идёт GET на <b>${API.DASHBOARD}</b>.<br>
-        Если видишь CORS-ошибку — надо разрешить домен GitHub Pages в настройках/прокси.
-      </div>
     `;
   } catch (e){
     app.innerHTML = `
@@ -522,7 +496,7 @@ async function showDashboard(){
 }
 
 /* ======================================================
-   SCREEN: ANALYTICS (пока заглушка под твой будущий fin-analytics)
+   SCREEN: ANALYTICS (GET)
 ====================================================== */
 async function showAnalytics(){
   activeScreen = 'analytics';
@@ -537,10 +511,10 @@ async function showAnalytics(){
   `;
 
   try{
-    const data = await apiFetch(API.ANALYTICS, { period, date: nowISODate(), month: monthKey() }, { method: 'POST' });
+    const data = await apiFetch(API.ANALYTICS, { period, date: nowISODate(), month: monthKey() }, { method: 'GET' });
     const currency = data.currency || '₽';
     const cats = Array.isArray(data.categories) ? data.categories : [];
-    const total = cats.reduce((s,c)=> s + (Number(c.amount)||0), 0) || (Number(data.total)||0);
+    const total = (Number(data.total)||0) || cats.reduce((s,c)=> s + (Number(c.amount)||0), 0);
 
     app.innerHTML = `
       <div class="topbar">
@@ -551,7 +525,7 @@ async function showAnalytics(){
       <div class="card">
         <div class="label">Всего</div>
         <div class="big">${fmtMoney(total, currency)}</div>
-        <div class="sub">Топ категории (${period})</div>
+        <div class="sub">Топ категории • ${periodLabel(period).toLowerCase()}</div>
 
         <div class="list">
           ${
@@ -579,7 +553,6 @@ async function showAnalytics(){
       <div class="card">
         <div class="title">Аналитика недоступна</div>
         <div class="sub">${String(e.message || e)}</div>
-        <div class="hint">Сделай webhook <b>fin-analytics</b> или поменяй URL в API.</div>
         <button class="btn" onclick="showAnalytics()">Повторить</button>
       </div>
     `;
@@ -615,12 +588,15 @@ function showAdd(){
         </div>
         <div>
           <div class="label">Период</div>
-          <div class="pill">${period}</div>
+          <select class="input" id="addPeriod">
+            <option value="today" ${period==='today'?'selected':''}>Сегодня</option>
+            <option value="week" ${period==='week'?'selected':''}>Неделя</option>
+            <option value="month" ${period==='month'?'selected':''}>Месяц</option>
+          </select>
         </div>
       </div>
 
       <button class="btn" onclick="submitExpense()">Сохранить</button>
-      <div class="hint">Категоризацию и логику делает n8n.</div>
     </div>
   `;
 }
@@ -629,6 +605,8 @@ async function submitExpense(){
   const amount = document.getElementById('amount').value;
   const description = document.getElementById('description').value || '';
   const date = document.getElementById('date').value || nowISODate();
+  const addPeriod = document.getElementById('addPeriod')?.value || period;
+  period = addPeriod;
 
   if (!amount || Number(amount) <= 0){
     tg?.showAlert('Введите сумму');
@@ -710,8 +688,6 @@ async function showRecent(){
           }
         </div>
       </div>
-
-      <div class="hint">Если RECENT ещё не сделан — создай webhook <b>fin-expenses-recent</b> или поменяй URL в API.</div>
     `;
   } catch(e){
     app.innerHTML = `
