@@ -252,6 +252,123 @@
       0%,100%{ transform: scale(1); opacity: .5; }
       50%{ transform: scale(1.35); opacity: 1; }
     }
+  
+    /* Analytics visuals */
+    .kpis{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .kpi{
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.12);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .kpi .kpi-label{ font-size: 12px; color: var(--muted); }
+    .kpi .kpi-value{ font-size: 20px; font-weight: 800; margin-top: 6px; }
+    .kpi .kpi-sub{ font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+    .donut-wrap{
+      display:grid;
+      grid-template-columns: 140px 1fr;
+      gap: 12px;
+      align-items:center;
+      margin-top: 10px;
+    }
+    .donut{
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: conic-gradient(rgba(255,255,255,.12) 0 360deg);
+      position: relative;
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+    .donut::after{
+      content:'';
+      position:absolute;
+      inset: 16px;
+      border-radius: 50%;
+      background: rgba(15,20,27,.92);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .donut-center{
+      position:absolute;
+      inset: 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      z-index: 1;
+      pointer-events:none;
+      text-align:center;
+      padding: 0 14px;
+    }
+    .donut-center .dc-big{ font-weight: 900; font-size: 16px; }
+    .donut-center .dc-sub{ font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .legend{
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+    }
+    .legend-row{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding: 8px 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.06);
+      background: rgba(0,0,0,.14);
+    }
+    .legend-left{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      min-width: 0;
+    }
+    .dotc{
+      width: 10px; height: 10px;
+      border-radius: 999px;
+      margin-top: 4px;
+      flex: 0 0 auto;
+      background: rgba(255,255,255,.30);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+    .legend-name{
+      font-size: 13px;
+      font-weight: 700;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      max-width: 180px;
+    }
+    .legend-sub{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .spark{
+      margin-top: 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.06);
+      background: rgba(0,0,0,.14);
+      padding: 10px;
+    }
+    .spark svg{ width: 100%; height: 70px; display:block; }
+    .spark .spark-meta{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .muted{ color: var(--muted); }
+
   </style>
 </head>
 
@@ -534,8 +651,92 @@ async function showAnalytics(){
   try{
     const data = await apiFetch(API.ANALYTICS, { period, date: nowISODate(), month: monthKey() }, { method: 'GET' });
     const currency = data.currency || '₽';
-    const cats = Array.isArray(data.categories) ? data.categories : [];
-    const total = cats.reduce((s,c)=> s + (Number(c.amount)||0), 0) || (Number(data.total)||0);
+
+    // Categories
+    let cats = Array.isArray(data.categories) ? data.categories.slice() : [];
+    cats = cats
+      .map(c => ({ name: (c.name ?? c.category_name ?? 'Категория'), amount: Number(c.amount) || 0 }))
+      .filter(c => c.amount > 0)
+      .sort((a,b) => b.amount - a.amount);
+
+    const total = (Number(data.total) || 0) || cats.reduce((s,c)=> s + c.amount, 0);
+
+    // Prev period comparison (optional)
+    const prevTotal = Number(data.prev_total);
+    const hasPrev = Number.isFinite(prevTotal);
+    const delta = hasPrev ? (total - prevTotal) : null;
+    const deltaPct = hasPrev ? (prevTotal > 0 ? Math.round((delta / prevTotal) * 100) : (total > 0 ? 100 : 0)) : null;
+
+    // Donut: top 5 + other
+    const MAX_SLICES = 5;
+    const top = cats.slice(0, MAX_SLICES);
+    const otherSum = cats.slice(MAX_SLICES).reduce((s,c)=> s + c.amount, 0);
+    const donutCats = otherSum > 0 ? [...top, { name: 'прочее', amount: otherSum }] : top;
+
+    // colors (light iOS-like)
+    const palette = [
+      'rgba(46,166,255,.90)',
+      'rgba(124,92,255,.85)',
+      'rgba(48,200,120,.85)',
+      'rgba(255,200,80,.85)',
+      'rgba(255,90,90,.80)',
+      'rgba(255,255,255,.35)'
+    ];
+
+    const safeTotal = total > 0 ? total : 1;
+    let acc = 0;
+    const stops = donutCats.map((c, i) => {
+      const frac = c.amount / safeTotal;
+      const start = acc;
+      acc += frac;
+      const a = Math.round(start * 360);
+      const b = Math.round(acc * 360);
+      const col = palette[i % palette.length];
+      return `${col} ${a}deg ${b}deg`;
+    }).join(', ');
+
+    const donutBg = total > 0
+      ? `conic-gradient(${stops})`
+      : `conic-gradient(rgba(255,255,255,.10) 0 360deg)`;
+
+    // Timeline (optional): [{date, amount}]
+    const timeline = Array.isArray(data.timeline) ? data.timeline
+      .map(p => ({ date: String(p.date || ''), amount: Number(p.amount) || 0 }))
+      .filter(p => p.date)
+      : [];
+
+    const points = timeline.map(p => p.amount);
+    const hasTimeline = points.length >= 2;
+
+    const avgPerDay = points.length ? Math.round(points.reduce((s,x)=>s+x,0) / points.length) : null;
+    const maxDay = points.length ? Math.max(...points) : null;
+
+    function sparklineSVG(values){
+      const w = 320, h = 70, pad = 6;
+      const maxV = Math.max(...values, 0);
+      const minV = Math.min(...values, 0);
+      const span = (maxV - minV) || 1;
+
+      const step = (w - pad*2) / (values.length - 1);
+      const pts = values.map((v, i) => {
+        const x = pad + i * step;
+        const y = pad + (h - pad*2) * (1 - ((v - minV) / span));
+        return [x,y];
+      });
+
+      const d = pts.map((p,i)=> (i===0 ? `M ${p[0].toFixed(2)} ${p[1].toFixed(2)}` : `L ${p[0].toFixed(2)} ${p[1].toFixed(2)}`)).join(' ');
+      const area = `${d} L ${(pad + (values.length - 1) * step).toFixed(2)} ${(h-pad).toFixed(2)} L ${pad.toFixed(2)} ${(h-pad).toFixed(2)} Z`;
+
+      return `
+        <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="График трат">
+          <path d="${area}" fill="rgba(46,166,255,.12)"></path>
+          <path d="${d}" fill="none" stroke="rgba(46,166,255,.85)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      `;
+    }
+
+    // Drivers (optional): top_expenses
+    const topExpenses = Array.isArray(data.top_expenses) ? data.top_expenses.slice(0,5) : [];
 
     app.innerHTML = `
       <div class="topbar">
@@ -544,30 +745,128 @@ async function showAnalytics(){
       </div>
 
       <div class="card">
-        <div class="label">Всего</div>
-        <div class="big">${fmtMoney(total, currency)}</div>
-        <div class="sub">Топ категории (${period})</div>
+        <div class="title">Итоги</div>
+        <div class="kpis">
+          <div class="kpi">
+            <div class="kpi-label">Всего • ${periodLabel(period).toLowerCase()}</div>
+            <div class="kpi-value">${fmtMoney(total, currency)}</div>
+            <div class="kpi-sub">${cats.length ? `${cats.length} катег.` : '—'}</div>
+          </div>
 
-        <div class="list">
-          ${
-            cats.length ? cats.slice(0,10).map(c=>{
-              const amt = Number(c.amount)||0;
-              const pct = total ? Math.round((amt/total)*100) : 0;
+          <div class="kpi">
+            <div class="kpi-label">Сравнение</div>
+            <div class="kpi-value">
+              ${
+                hasPrev
+                  ? `${delta >= 0 ? '+' : '−'}${fmtMoney(Math.abs(delta), currency)}`
+                  : '—'
+              }
+            </div>
+            <div class="kpi-sub">
+              ${
+                hasPrev
+                  ? `${deltaPct >= 0 ? '+' : '−'}${Math.abs(deltaPct)}% к прошлому периоду`
+                  : 'нет данных'
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <div>
+            <div class="title">Структура</div>
+            <div class="sub">Доли по категориям</div>
+          </div>
+          <span class="pill info">${donutCats.length ? `${donutCats.length} сегм.` : '—'}</span>
+        </div>
+
+        <div class="donut-wrap">
+          <div class="donut" style="background:${donutBg};">
+            <div class="donut-center">
+              <div class="dc-big">${total > 0 ? '100%' : '—'}</div>
+              <div class="dc-sub">${total > 0 ? 'за период' : 'нет трат'}</div>
+            </div>
+          </div>
+
+          <div class="legend">
+            ${
+              donutCats.length ? donutCats.map((c,i)=>{
+                const pct = total > 0 ? Math.round((c.amount / total) * 100) : 0;
+                const col = palette[i % palette.length];
+                return `
+                  <div class="legend-row">
+                    <div class="legend-left">
+                      <span class="dotc" style="background:${col};"></span>
+                      <div style="min-width:0;">
+                        <div class="legend-name">${c.name}</div>
+                        <div class="legend-sub">${pct}% • ${fmtMoney(c.amount, currency)}</div>
+                      </div>
+                    </div>
+                    <div class="amt">${pct}%</div>
+                  </div>
+                `;
+              }).join('') : `<div class="sub">Пока нет данных.</div>`
+            }
+          </div>
+        </div>
+      </div>
+
+      ${
+        hasTimeline ? `
+        <div class="card">
+          <div class="row">
+            <div>
+              <div class="title">Динамика</div>
+              <div class="sub">Траты по дням</div>
+            </div>
+            <span class="pill">${periodLabel(period)}</span>
+          </div>
+
+          <div class="spark">
+            ${sparklineSVG(points)}
+            <div class="spark-meta">
+              <div>среднее: <b>${avgPerDay !== null ? fmtMoney(avgPerDay, currency) : '—'}</b></div>
+              <div>пик: <b>${maxDay !== null ? fmtMoney(maxDay, currency) : '—'}</b></div>
+            </div>
+          </div>
+        </div>
+        ` : ''
+      }
+
+      ${
+        topExpenses.length ? `
+        <div class="card">
+          <div class="row">
+            <div>
+              <div class="title">Драйверы</div>
+              <div class="sub">Самые крупные траты</div>
+            </div>
+            <span class="pill">${topExpenses.length} шт</span>
+          </div>
+
+          <div class="list">
+            ${topExpenses.map(x=>{
+              const name = x.description || x.comment || 'Без описания';
+              const cat = x.category_name || x.category || '';
+              const dt = x.date || x.created_at || '';
               return `
                 <div class="item">
                   <div class="left">
-                    <div class="name">${c.name || c.category_name || 'Категория'}</div>
-                    <div class="meta">${pct}% от всех трат</div>
+                    <div class="name">${name}</div>
+                    <div class="meta">${[cat, dt].filter(Boolean).join(' • ')}</div>
                   </div>
                   <div class="right">
-                    <div class="amt">${fmtMoney(amt, currency)}</div>
+                    <div class="amt">${fmtMoney(x.amount, currency)}</div>
                   </div>
                 </div>
               `;
-            }).join('') : `<div class="sub">Пока нет данных.</div>`
-          }
+            }).join('')}
+          </div>
         </div>
-      </div>
+        ` : ''
+      }
     `;
   } catch(e){
     app.innerHTML = `
