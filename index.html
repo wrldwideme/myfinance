@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Expenses Mini App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Telegram Mini App API -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f0f0f;
+      color: #ffffff;
+    }
+    .container {
+      padding: 16px 16px 80px;
+    }
+    .card {
+      background: #1c1c1e;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .value {
+      font-size: 24px;
+      margin-top: 6px;
+    }
+    .btn {
+      background: #2ea6ff;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      width: 100%;
+      font-size: 16px;
+      margin-top: 12px;
+      cursor: pointer;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    .nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      background: #1c1c1e;
+      border-top: 1px solid #2c2c2e;
+    }
+    .nav button {
+      flex: 1;
+      background: none;
+      border: none;
+      color: #aaa;
+      padding: 12px;
+      font-size: 14px;
+    }
+    .nav button.active {
+      color: #2ea6ff;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="app" class="container"></div>
+
+<div class="nav">
+  <button onclick="showDashboard()" class="active">🏠 Сейчас</button>
+  <button onclick="showAnalytics()">📊 Аналитика</button>
+  <button onclick="showAddExpense()">➕ Добавить</button>
+</div>
+
+<script>
+/* ======================================================
+   TELEGRAM
+====================================================== */
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+/* ======================================================
+   🔌 API WEBHOOK ЗАГЛУШКИ (ЗАМЕНИШЬ НА n8n)
+====================================================== */
+const API = {
+  DASHBOARD: 'https://n8n.todobotmy.ru/webhook/dashboard',
+  ANALYTICS: 'https://N8N_WEBHOOK/analytics',
+  ADD_EXPENSE: 'https://N8N_WEBHOOK/expenses/add'
+};
+
+/* ======================================================
+   APP STATE
+====================================================== */
+const app = document.getElementById('app');
+
+/* ======================================================
+   NAV
+====================================================== */
+function setActive(index) {
+  document.querySelectorAll('.nav button').forEach((btn, i) => {
+    btn.classList.toggle('active', i === index);
+  });
+}
+
+/* ======================================================
+   DASHBOARD
+====================================================== */
+async function showDashboard() {
+  setActive(0);
+
+  app.innerHTML = `<div class="card">Загрузка...</div>`;
+
+  // 🔹 MOCK (убери, когда подключишь fetch)
+  const data = {
+    spent: 42300,
+    forecast: 55800,
+    currency: '₽'
+  };
+
+  /*
+  // 🔹 REAL FETCH (n8n)
+  const res = await fetch(API.DASHBOARD, {
+    headers: {
+      'Authorization': tg.initData
+    }
+  });
+  const data = await res.json();
+  */
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="title">Потрачено за месяц</div>
+      <div class="value">${data.spent} ${data.currency}</div>
+    </div>
+
+    <div class="card">
+      <div class="title">Прогноз конца месяца</div>
+      <div class="value">${data.forecast} ${data.currency}</div>
+    </div>
+  `;
+}
+
+/* ======================================================
+   ANALYTICS
+====================================================== */
+function showAnalytics() {
+  setActive(1);
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="title">Аналитика</div>
+      <div class="value">📊 Графики будут здесь</div>
+    </div>
+  `;
+}
+
+/* ======================================================
+   ADD EXPENSE
+====================================================== */
+function showAddExpense() {
+  setActive(2);
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="title">Добавить трату</div>
+
+      <input id="amount" type="number" placeholder="Сумма" />
+      <input id="description" placeholder="Описание" />
+
+      <button class="btn" onclick="submitExpense()">Сохранить</button>
+    </div>
+  `;
+}
+
+async function submitExpense() {
+  const amount = document.getElementById('amount').value;
+  const description = document.getElementById('description').value;
+
+  if (!amount) {
+    tg.showAlert('Введите сумму');
+    return;
+  }
+
+  /*
+  await fetch(API.ADD_EXPENSE, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': tg.initData
+    },
+    body: JSON.stringify({ amount, description })
+  });
+  */
+
+  tg.showPopup({
+    title: 'Готово',
+    message: 'Трата сохранена',
+    buttons: [{ type: 'ok' }]
+  });
+
+  showDashboard();
+}
+
+/* ======================================================
+   INIT
+====================================================== */
+showDashboard();
+</script>
+
+</body>
+</html>
