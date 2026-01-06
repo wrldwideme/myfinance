@@ -19,6 +19,17 @@
       --radius: 16px;
     }
 
+    /* Светлая тема */
+    .light-theme {
+      --bg: #ffffff;
+      --card: #f8f9fa;
+      --muted: rgba(0,0,0,.65);
+      --text: #1c1c1e;
+      --border: rgba(0,0,0,.08);
+      --accent: #2ea6ff;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+    }
+
     html, body {
       height: 100%;
       margin: 0;
@@ -27,6 +38,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.3s, color 0.3s;
     }
 
     .wrap { padding: 14px 14px 88px; }
@@ -47,7 +59,7 @@
     .seg{
       display:flex;
       gap:6px;
-      background: rgba(255,255,255,.06);
+      background: var(--card);
       border:1px solid var(--border);
       padding: 6px;
       border-radius: 999px;
@@ -62,7 +74,7 @@
       cursor:pointer;
     }
     .seg button.active{
-      background: rgba(255,255,255,.10);
+      background: var(--accent);
       color: var(--text);
     }
 
@@ -73,6 +85,7 @@
       padding: 14px;
       box-shadow: var(--shadow);
       margin-bottom: 10px;
+      transition: background-color 0.3s, border-color 0.3s;
     }
 
     .row{
@@ -104,15 +117,18 @@
       gap:6px;
       padding: 6px 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,.08);
+      background: rgba(0,0,0,.05);
       border:1px solid var(--border);
       color: var(--muted);
       font-size: 12px;
       white-space: nowrap;
     }
-    .pill.warn{ color: #ffd479; }
-    .pill.ok{ color: #8cffb1; }
-    .pill.bad{ color: #ff8c8c; }
+    .light-theme .pill {
+      background: rgba(0,0,0,.05);
+    }
+    .pill.warn{ color: #ff9500; }
+    .pill.ok{ color: #34c759; }
+    .pill.bad{ color: #ff3b30; }
 
     .list{ margin-top: 6px; }
     .item{
@@ -157,20 +173,20 @@
     }
     .mini-btn{
       border: 1px solid var(--border);
-      background: rgba(255,255,255,.06);
+      background: var(--card);
       color: var(--muted);
       padding: 6px 10px;
       border-radius: 10px;
       font-size: 12px;
       cursor:pointer;
     }
-    .mini-btn.danger{ color: #ff9a9a; }
+    .mini-btn.danger{ color: #ff3b30; }
 
     .btn{
       width: 100%;
       border:0;
       background: var(--accent);
-      color: #001018;
+      color: #ffffff;
       font-weight: 800;
       padding: 14px 14px;
       border-radius: 14px;
@@ -181,15 +197,20 @@
 
     .input{
       width: 100%;
+      box-sizing: border-box;
       border: 1px solid var(--border);
-      background: rgba(255,255,255,.06);
+      background: var(--card);
       color: var(--text);
       border-radius: 14px;
       padding: 12px 12px;
       font-size: 16px;
       outline: none;
+      transition: background-color 0.3s, border-color 0.3s;
     }
-    .input::placeholder{ color: rgba(255,255,255,.35); }
+    .input::placeholder{ 
+      color: var(--muted);
+      opacity: 0.5;
+    }
 
     .grid2{
       display:grid;
@@ -203,16 +224,17 @@
       right: 0;
       bottom: 0;
       padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
-      background: rgba(18,18,22,.92);
+      background: var(--card);
       backdrop-filter: blur(14px);
       border-top: 1px solid var(--border);
       display:flex;
       gap: 8px;
+      z-index: 90;
     }
     .nav button{
       flex: 1;
       border: 1px solid var(--border);
-      background: rgba(255,255,255,.06);
+      background: var(--card);
       color: var(--muted);
       padding: 10px 8px;
       border-radius: 14px;
@@ -220,13 +242,13 @@
       cursor:pointer;
     }
     .nav button.active{
-      color: var(--text);
-      border-color: rgba(46,166,255,.35);
-      background: rgba(46,166,255,.14);
+      color: var(--accent);
+      border-color: var(--accent);
+      background: rgba(46,166,255,.1);
     }
 
     .hint{
-      color: rgba(255,255,255,.45);
+      color: var(--muted);
       font-size: 12px;
       margin-top: 8px;
       line-height: 1.35;
@@ -243,7 +265,8 @@
     }
     .dot{
       width: 8px; height: 8px; border-radius: 50%;
-      background: rgba(255,255,255,.25);
+      background: var(--muted);
+      opacity: 0.5;
       animation: pulse 1s infinite ease-in-out;
     }
     .dot:nth-child(2){ animation-delay: .15s; }
@@ -261,8 +284,8 @@
       margin-top: 10px;
     }
     .kpi{
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(0,0,0,.12);
+      border: 1px solid var(--border);
+      background: var(--card);
       border-radius: 16px;
       padding: 12px;
     }
@@ -281,18 +304,18 @@
       width: 140px;
       height: 140px;
       border-radius: 50%;
-      background: conic-gradient(rgba(255,255,255,.12) 0 360deg);
+      background: conic-gradient(var(--border) 0 360deg);
       position: relative;
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,.08);
     }
     .donut::after{
       content:'';
       position:absolute;
       inset: 16px;
       border-radius: 50%;
-      background: rgba(15,20,27,.92);
-      border: 1px solid rgba(255,255,255,.08);
+      background: var(--bg);
+      border: 1px solid var(--border);
     }
     .donut-center{
       position:absolute;
@@ -321,8 +344,8 @@
       gap:10px;
       padding: 8px 10px;
       border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.06);
-      background: rgba(0,0,0,.14);
+      border: 1px solid var(--border);
+      background: var(--card);
     }
     .legend-left{
       display:flex;
@@ -335,8 +358,7 @@
       border-radius: 999px;
       margin-top: 4px;
       flex: 0 0 auto;
-      background: rgba(255,255,255,.30);
-      border: 1px solid rgba(255,255,255,.18);
+      background: var(--accent);
     }
     .legend-name{
       font-size: 13px;
@@ -354,8 +376,8 @@
     .spark{
       margin-top: 10px;
       border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.06);
-      background: rgba(0,0,0,.14);
+      border: 1px solid var(--border);
+      background: var(--card);
       padding: 10px;
     }
     .spark svg{ width: 100%; height: 70px; display:block; }
@@ -371,16 +393,51 @@
 
   
     /* ===== Analytics extras ===== */
-    .kpi-row{ display:flex; gap:10px; margin-top:10px; }
-    .kpi{ flex:1; background: rgba(255,255,255,.04); border:1px solid var(--border); border-radius: 14px; padding: 10px; }
-    .kpi .k{ color: var(--muted); font-size: 12px; margin-bottom: 4px; }
-    .kpi .v{ font-weight: 800; font-size: 15px; }
+    .kpi-row{ 
+      display:flex; 
+      gap:10px; 
+      margin-top:10px; 
+    }
+    .kpi{ 
+      flex:1; 
+      background: var(--card); 
+      border:1px solid var(--border); 
+      border-radius: 14px; 
+      padding: 10px; 
+    }
+    .kpi .k{ 
+      color: var(--muted); 
+      font-size: 12px; 
+      margin-bottom: 4px; 
+    }
+    .kpi .v{ 
+      font-weight: 800; 
+      font-size: 15px; 
+    }
+    .kpi .v .delta-pill {
+      display: block;
+      font-size: 11px;
+      margin-top: 2px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: rgba(46,166,255,.1);
+      color: var(--accent);
+      width: fit-content;
+    }
+    .kpi .v .delta-pill.warn {
+      background: rgba(255,149,0,.1);
+      color: #ff9500;
+    }
+    .kpi .v .delta-pill.ok {
+      background: rgba(52,199,89,.1);
+      color: #34c759;
+    }
 
     .donut-wrap{ display:flex; gap:14px; align-items:center; margin-top: 10px; }
     .donut{
       width: 140px; height: 140px;
       border-radius: 50%;
-      background: conic-gradient(from -90deg, rgba(255,255,255,.12) 0 360deg);
+      background: conic-gradient(from -90deg, var(--border) 0 360deg);
       position: relative;
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
@@ -391,7 +448,7 @@
       position:absolute;
       inset: 22%;
       border-radius: 50%;
-      background: var(--card);
+      background: var(--bg);
       border: 1px solid var(--border);
     }
     .donut-center{
@@ -438,7 +495,7 @@
       border-radius: 50%;
       background: var(--accent);
       border: none;
-      color: #001018;
+      color: #ffffff;
       font-size: 28px;
       font-weight: 700;
       cursor: pointer;
@@ -465,7 +522,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(8px);
       z-index: 1000;
       display: flex;
@@ -490,6 +547,7 @@
       box-shadow: var(--shadow);
       transform: translateY(20px);
       animation: slideUp 0.3s forwards;
+      box-sizing: border-box;
     }
     
     @keyframes slideUp {
@@ -506,6 +564,7 @@
     .modal-title {
       font-size: 18px;
       font-weight: 700;
+      color: var(--text);
     }
     
     .close-btn {
@@ -520,16 +579,20 @@
       align-items: center;
       justify-content: center;
       border-radius: 8px;
+      transition: background-color 0.2s;
     }
     
     .close-btn:hover {
-      background: rgba(255,255,255,.06);
+      background: rgba(0,0,0,.05);
+    }
+    .light-theme .close-btn:hover {
+      background: rgba(0,0,0,.05);
     }
     
     /* Новые цвета для категорий расходов */
-    .expense-low { color: #8cffb1; } /* Зеленый */
-    .expense-medium { color: #ffd479; } /* Желтый */
-    .expense-high { color: #ff8c8c; } /* Красный */
+    .expense-low { color: #34c759; } /* Зеленый */
+    .expense-medium { color: #ff9500; } /* Оранжевый */
+    .expense-high { color: #ff3b30; } /* Красный */
     .expense-neutral { color: var(--accent); } /* Акцентный цвет */
 
   </style>
@@ -580,10 +643,26 @@ try {
   if (tg) {
     tg.expand();
     const p = tg.themeParams || {};
+    
+    // Применяем тему в зависимости от цветовой схемы
+    if (tg.colorScheme === 'light') {
+      document.documentElement.classList.add('light-theme');
+    } else {
+      document.documentElement.classList.add('dark-theme');
+    }
+    
+    // Переопределяем цвета если они переданы
     if (p.bg_color) document.documentElement.style.setProperty('--bg', p.bg_color);
     if (p.text_color) document.documentElement.style.setProperty('--text', p.text_color);
     if (p.hint_color) document.documentElement.style.setProperty('--muted', p.hint_color);
     if (p.button_color) document.documentElement.style.setProperty('--accent', p.button_color);
+    
+    // Для светлой темы Telegram тоже может передать цвета
+    if (tg.colorScheme === 'light') {
+      if (!p.bg_color) document.documentElement.style.setProperty('--bg', '#ffffff');
+      if (!p.text_color) document.documentElement.style.setProperty('--text', '#1c1c1e');
+      if (!p.hint_color) document.documentElement.style.setProperty('--muted', 'rgba(0,0,0,.65)');
+    }
   }
 } catch (e) {
   console.warn('Telegram WebApp not available:', e);
@@ -693,13 +772,13 @@ function colorForIndex(i){
   // Новые цвета в соответствии с темой приложения
   const colors = [
     '#2ea6ff',  // основной акцентный
-    '#8cffb1',  // зеленый
-    '#ffd479',  // желтый/оранжевый
-    '#ff8c8c',  // красный
-    '#b388ff',  // фиолетовый
-    '#7afcff',  // голубой
-    '#ff9a9a',  // розовый
-    '#ffb347',  // персиковый
+    '#34c759',  // зеленый
+    '#ff9500',  // оранжевый
+    '#ff3b30',  // красный
+    '#af52de',  // фиолетовый
+    '#5ac8fa',  // голубой
+    '#ff2d55',  // розовый
+    '#ffcc00',  // желтый
     '#c5e1a5',  // светлый зеленый
     '#80deea'   // бирюзовый
   ];
@@ -708,7 +787,7 @@ function colorForIndex(i){
 
 function buildDonutGradient(parts){
   const total = parts.reduce((s,p)=>s + (Number(p.amount)||0), 0) || 0;
-  if (!total) return `conic-gradient(from -90deg, rgba(255,255,255,.12) 0 360deg)`;
+  if (!total) return `conic-gradient(from -90deg, var(--border) 0 360deg)`;
   let acc = 0;
   const stops = parts.map(p=>{
     const a = Number(p.amount)||0;
@@ -1017,7 +1096,7 @@ async function showAnalytics(){
               <div class="k">Изменение</div>
               <div class="v">
                 ${delta >= 0 ? '+' : ''}${fmtMoney(delta, currency)}
-                ${deltaPct !== null ? `<span class="pill ${delta > 0 ? 'warn' : (delta < 0 ? 'ok' : '')}" style="margin-left:8px;">${deltaPct >= 0 ? '+' : ''}${deltaPct}%</span>` : ''}
+                ${deltaPct !== null ? `<span class="delta-pill ${delta > 0 ? 'warn' : (delta < 0 ? 'ok' : '')}">${deltaPct >= 0 ? '+' : ''}${deltaPct}%</span>` : ''}
               </div>
             </div>
           </div>` : ''
