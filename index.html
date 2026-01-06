@@ -342,8 +342,7 @@
       position: relative;
       border: 1px solid var(--border);
       box-shadow: 0 10px 30px rgba(0,0,0,.08);
-      transform: rotate(-90deg); /* Начинаем с вершины */
-      animation: donutAppear 1s ease-out;
+      animation: donutAppear 0.8s ease-out;
     }
     .donut-chart {
       width: 100%;
@@ -373,7 +372,6 @@
       pointer-events:none;
       text-align:center;
       padding: 0 14px;
-      transform: rotate(90deg); /* Возвращаем текст в исходное положение */
       animation: textAppear 0.8s ease-out 0.3s both;
     }
     .donut-center .dc-big{ font-weight: 900; font-size: 16px; }
@@ -381,11 +379,11 @@
 
     @keyframes donutAppear {
       0% {
-        transform: rotate(-90deg) scale(0.8);
+        transform: scale(0.8);
         opacity: 0;
       }
       100% {
-        transform: rotate(-90deg) scale(1);
+        transform: scale(1);
         opacity: 1;
       }
     }
@@ -393,12 +391,29 @@
     @keyframes textAppear {
       0% {
         opacity: 0;
-        transform: rotate(90deg) translateY(10px);
+        transform: translateY(10px);
       }
       100% {
         opacity: 1;
-        transform: rotate(90deg) translateY(0);
+        transform: translateY(0);
       }
+    }
+
+    /* Анимация для сегментов donut */
+    @keyframes segmentAppear {
+      0% {
+        transform: rotate(0deg) scale(0);
+        opacity: 0;
+      }
+      100% {
+        transform: rotate(0deg) scale(1);
+        opacity: 1;
+      }
+    }
+    
+    .segment-path {
+      transform-origin: 70px 70px;
+      animation: segmentAppear 0.6s ease-out forwards;
     }
 
     .legend{
@@ -510,8 +525,7 @@
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
       flex: 0 0 auto;
-      transform: rotate(-90deg);
-      animation: donutAppear 1s ease-out;
+      animation: donutAppear 0.8s ease-out;
     }
     .donut::after{
       content:'';
@@ -533,7 +547,6 @@
       text-align:center;
       padding: 10px;
       pointer-events:none;
-      transform: rotate(90deg);
       animation: textAppear 0.8s ease-out 0.3s both;
     }
     .donut-center .t{ font-weight: 900; font-size: 14px; }
@@ -923,29 +936,32 @@ function labelForPeriod(p){
 }
 
 function colorForIndex(i){
-  // Новые цвета в соответствии с темой приложения
+  // Упорядоченная последовательность цветов
   const colors = [
-    '#2ea6ff',  // основной акцентный
+    '#2ea6ff',  // основной акцентный (синий)
     '#34c759',  // зеленый
     '#ff9500',  // оранжевый
-    '#ff3b30',  // красный
     '#af52de',  // фиолетовый
+    '#ff3b30',  // красный
     '#5ac8fa',  // голубой
-    '#ff2d55',  // розовый
     '#ffcc00',  // желтый
     '#c5e1a5',  // светлый зеленый
-    '#80deea'   // бирюзовый
+    '#80deea',  // бирюзовый
+    '#ff2d55'   // розовый
   ];
   return colors[i % colors.length];
 }
 
 // Улучшенная функция для создания donut с сегментами
 function buildDonutSegments(parts) {
-  const total = parts.reduce((s,p) => s + (Number(p.amount)||0), 0) || 0;
+  const total = parts.reduce((s, p) => s + (Number(p.amount) || 0), 0) || 0;
   if (!total) return '';
   
   let accumulatedAngle = 0;
-  const svgParts = parts.map(p => {
+  const svgParts = [];
+  
+  for (let i = 0; i < parts.length; i++) {
+    const p = parts[i];
     const amount = Number(p.amount) || 0;
     const percentage = amount / total;
     const angle = percentage * 360;
@@ -982,11 +998,15 @@ function buildDonutSegments(parts) {
       `Z`
     ].join(' ');
     
-    accumulatedAngle += angle;
+    // Анимация с задержкой для каждого сегмента
+    const animationDelay = (i * 0.1) + 0.2;
     
-    return `<path d="${path}" fill="${p.color}" stroke="var(--bg)" stroke-width="1" 
-                   style="transform-origin: 70px 70px; animation: segmentAppear 0.8s ease-out ${(startAngle/360)*0.5}s both;">`;
-  });
+    svgParts.push(
+      `<path d="${path}" fill="${p.color}" stroke="var(--border)" stroke-width="1" class="segment-path" style="animation-delay: ${animationDelay}s;" />`
+    );
+    
+    accumulatedAngle += angle;
+  }
   
   return `
     <svg viewBox="0 0 140 140" class="donut-chart">
@@ -1261,6 +1281,7 @@ async function showAnalytics(){
     const restSum = catsSorted.slice(topN).reduce((s,c)=> s + c.amount, 0);
     if (restSum > 0) catsTop.push({ name: 'прочее', amount: restSum });
 
+    // Применяем цвета в правильном порядке
     const donutParts = catsTop.map((c, i) => ({ 
       ...c, 
       color: colorForIndex(i) 
