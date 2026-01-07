@@ -39,9 +39,46 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       transition: background-color 0.3s, color 0.3s;
+      overscroll-behavior-y: contain;
     }
 
     .wrap { padding: 14px 14px 88px; }
+
+    /* Pull-to-Refresh индикатор */
+    .ptr-indicator {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(-100%);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .ptr-indicator.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .ptr-spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid transparent;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: ptr-spin 0.6s linear infinite;
+    }
+
+    @keyframes ptr-spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 
     .topbar{
       display:flex;
@@ -761,6 +798,11 @@
 </head>
 
 <body>
+  <!-- Индикатор Pull-to-Refresh -->
+  <div id="ptrIndicator" class="ptr-indicator">
+    <div class="ptr-spinner"></div>
+  </div>
+
   <div id="app" class="wrap"></div>
   
   <!-- Кнопка добавления -->
@@ -825,10 +867,117 @@ try {
       if (!p.text_color) document.documentElement.style.setProperty('--text', '#1c1c1e');
       if (!p.hint_color) document.documentElement.style.setProperty('--muted', 'rgba(0,0,0,.65)');
     }
+
+    // Включаем нативный Pull-to-Refresh в Telegram Web App
+    tg.enablePullToRefresh();
+    tg.onEvent('pullToRefresh', handlePullToRefresh);
   }
 } catch (e) {
   console.warn('Telegram WebApp not available:', e);
   tg = null;
+}
+
+/* ======================================================
+   PULL-TO-REFRESH IMPLEMENTATION
+====================================================== */
+let isRefreshing = false;
+let touchStartY = 0;
+let touchCurrentY = 0;
+const ptrIndicator = document.getElementById('ptrIndicator');
+const appContainer = document.getElementById('app');
+
+// Нативная обработка Pull-to-Refresh в Telegram
+async function handlePullToRefresh() {
+  if (isRefreshing) return;
+  
+  isRefreshing = true;
+  
+  try {
+    // Показываем индикатор
+    ptrIndicator.classList.add('visible');
+    
+    // Обновляем текущий экран
+    await refreshCurrentScreen();
+    
+    // Тактильная обратная связь в Telegram
+    tg?.HapticFeedback?.notificationOccurred('success');
+  } catch (error) {
+    console.error('Refresh error:', error);
+    tg?.HapticFeedback?.notificationOccurred('error');
+  } finally {
+    // Скрываем индикатор
+    ptrIndicator.classList.remove('visible');
+    
+    // Останавливаем Pull-to-Refresh в Telegram
+    tg?.closePullToRefresh();
+    
+    // Сбрасываем флаг
+    setTimeout(() => {
+      isRefreshing = false;
+    }, 500);
+  }
+}
+
+// Фоллбэк для браузера (если не в Telegram)
+function initPullToRefreshFallback() {
+  if (tg) return; // Не нужно в Telegram
+  
+  document.addEventListener('touchstart', (e) => {
+    if (isRefreshing || window.scrollY > 10) return;
+    touchStartY = e.touches[0].clientY;
+  });
+
+  document.addEventListener('touchmove', (e) => {
+    if (isRefreshing || window.scrollY > 10) return;
+    
+    touchCurrentY = e.touches[0].clientY;
+    const diff = touchCurrentY - touchStartY;
+    
+    if (diff > 0 && window.scrollY === 0) {
+      e.preventDefault();
+      const progress = Math.min(diff / 100, 1);
+      ptrIndicator.style.opacity = progress;
+      ptrIndicator.style.transform = `translateY(${Math.min(diff, 60)}px)`;
+    }
+  });
+
+  document.addEventListener('touchend', async (e) => {
+    if (isRefreshing || window.scrollY > 10) return;
+    
+    const diff = touchCurrentY - touchStartY;
+    
+    if (diff > 80) {
+      isRefreshing = true;
+      ptrIndicator.classList.add('visible');
+      
+      try {
+        await refreshCurrentScreen();
+      } catch (error) {
+        console.error('Refresh error:', error);
+      } finally {
+        setTimeout(() => {
+          ptrIndicator.classList.remove('visible');
+          isRefreshing = false;
+        }, 1000);
+      }
+    } else {
+      ptrIndicator.classList.remove('visible');
+    }
+    
+    touchStartY = 0;
+    touchCurrentY = 0;
+  });
+}
+
+// Общая функция обновления текущего экрана
+async function refreshCurrentScreen() {
+  if (activeScreen === 'dashboard') {
+    await showDashboard();
+  } else if (activeScreen === 'analytics') {
+    await showAnalytics();
+  } else if (activeScreen === 'recent') {
+    await showRecent();
+  }
 }
 
 /* ======================================================
@@ -1637,6 +1786,11 @@ async function deleteExpense(id){
 /* ======================================================
    INIT
 ====================================================== */
+// Инициализация Pull-to-Refresh
+document.addEventListener('DOMContentLoaded', () => {
+  initPullToRefreshFallback();
+});
+
 // Запускаем приложение
 try {
   showDashboard();
