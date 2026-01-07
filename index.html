@@ -1195,6 +1195,9 @@ function getExpenseColorClass(amount) {
   return 'expense-high';
 }
 
+/* ======================================================
+   ИСПРАВЛЕННЫЙ API FETCH - ПРАВИЛЬНАЯ ОБРАБОТКА JSON
+====================================================== */
 async function apiFetch(url, payload={}, opts={}){
   const method = (opts.method || 'POST').toUpperCase();
   const initData = tg?.initData || '';
@@ -1228,23 +1231,36 @@ async function apiFetch(url, payload={}, opts={}){
     const res = await fetch(finalUrl, options);
     
     if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`HTTP ${res.status}: ${text || 'Request failed'}`);
+      // Пытаемся прочитать текст ошибки
+      let errorText = 'Unknown error';
+      try {
+        errorText = await res.text();
+      } catch (e) {
+        // Не удалось прочитать текст
+      }
+      throw new Error(`HTTP ${res.status}: ${errorText || 'Request failed'}`);
     }
 
-    const contentType = res.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
-      return await res.json();
+    // ВАЖНОЕ ИСПРАВЛЕНИЕ: Сначала читаем ответ как текст
+    const text = await res.text();
+    
+    // Если ответ пустой, возвращаем пустой объект
+    if (!text || text.trim() === '') {
+      console.warn('Empty response from API');
+      return {};
     }
     
-    const text = await res.text();
+    // Пытаемся распарсить как JSON
     try {
       return JSON.parse(text);
-    } catch {
-      return { raw: text };
+    } catch (jsonError) {
+      console.warn('Response is not valid JSON, returning empty object. Text:', text.substring(0, 200));
+      // Возвращаем пустой объект вместо ошибки парсинга
+      return {};
     }
   } catch (error) {
     console.error('API fetch error:', error);
+    // Пробрасываем ошибку дальше для обработки в UI
     throw error;
   }
 }
@@ -1295,6 +1311,12 @@ async function showDashboard(){
     };
 
     const data = unwrapN8n(await apiFetch(API.DASHBOARD, params, { method: 'GET' }));
+    
+    // Проверяем, есть ли данные
+    if (!data || Object.keys(data).length === 0) {
+      throw new Error('Сервер вернул пустой ответ');
+    }
+    
     const currency = data.currency || '₽';
     const budgets = Array.isArray(data.budgets) ? data.budgets : [];
     const insight = data.insight || null;
@@ -1407,6 +1429,11 @@ async function showAnalytics(){
     }, { 
       method: 'GET' 
     });
+    
+    // Проверяем на пустые данные
+    if (!raw || Object.keys(raw).length === 0) {
+      throw new Error('Сервер вернул пустой ответ');
+    }
     
     const data = unwrapN8n(raw);
     const currency = data.currency || '₽';
@@ -1579,6 +1606,7 @@ async function showAnalytics(){
       <div class="card">
         <div style="font-size: 16px; font-weight: 700;">Аналитика недоступна</div>
         <div class="sub">${escapeHtml(String(e.message || e))}</div>
+        <div class="divider"></div>
         <button class="btn" onclick="showAnalytics()">Повторить</button>
       </div>
     `;
@@ -1677,6 +1705,11 @@ async function showRecent(){
     }, { 
       method: 'POST' 
     }));
+    
+    // Проверяем на пустые данные
+    if (!data || Object.keys(data).length === 0) {
+      throw new Error('Сервер вернул пустой ответ');
+    }
     
     const currency = data.currency || '₽';
     const items = Array.isArray(data.expenses) ? data.expenses : (Array.isArray(data) ? data : []);
