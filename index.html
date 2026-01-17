@@ -19,7 +19,6 @@
       --radius: 16px;
     }
 
-    /* Светлая тема */
     .light-theme {
       --bg: #ffffff;
       --card: #f8f9fa;
@@ -72,6 +71,11 @@
       border-radius: 999px;
       font-size: 13px;
       cursor:pointer;
+      transition: all 0.2s;
+    }
+    .seg button:disabled{
+      opacity: 0.5;
+      cursor: not-allowed;
     }
     .seg button.active{
       background: var(--accent);
@@ -179,6 +183,11 @@
       border-radius: 10px;
       font-size: 12px;
       cursor:pointer;
+      transition: all 0.2s;
+    }
+    .mini-btn:disabled{
+      opacity: 0.5;
+      cursor: not-allowed;
     }
     .mini-btn.danger{ color: #ff3b30; }
 
@@ -193,6 +202,11 @@
       cursor:pointer;
       font-size: 16px;
       margin-top: 10px;
+      transition: all 0.2s;
+    }
+    .btn:disabled{
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     .input{
@@ -211,15 +225,17 @@
       color: var(--muted);
       opacity: 0.5;
     }
+    .input:disabled{
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
 
-    /* Исправление для input date на мобильных устройствах */
     .input[type="date"] {
       -webkit-appearance: none;
       appearance: none;
-      min-height: 44px; /* Минимальная высота для удобного тапа */
+      min-height: 44px;
     }
     
-    /* Стили для WebKit браузеров (iOS, Chrome) */
     .input[type="date"]::-webkit-calendar-picker-indicator {
       background-size: 20px;
       padding: 4px;
@@ -227,19 +243,16 @@
       opacity: 0.7;
     }
     
-    /* Стили для Firefox */
     .input[type="date"]::-moz-focus-inner {
       border: 0;
     }
     
-    /* Адаптивные стили для маленьких экранов */
     @media (max-width: 480px) {
       .input[type="date"] {
         font-size: 14px;
         padding: 10px 12px;
       }
       
-      /* Убедимся, что модальное окно не выходит за пределы экрана */
       .modal {
         margin: 0 10px;
         max-width: calc(100% - 20px);
@@ -274,6 +287,11 @@
       border-radius: 14px;
       font-size: 13px;
       cursor:pointer;
+      transition: all 0.2s;
+    }
+    .nav button:disabled{
+      opacity: 0.5;
+      cursor: not-allowed;
     }
     .nav button.active{
       color: var(--accent);
@@ -310,7 +328,6 @@
       50%{ transform: scale(1.35); opacity: 1; }
     }
   
-    /* Analytics visuals */
     .kpis{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -327,7 +344,6 @@
     .kpi .kpi-value{ font-size: 20px; font-weight: 800; margin-top: 6px; }
     .kpi .kpi-sub{ font-size: 12px; color: var(--muted); margin-top: 6px; }
 
-    /* Улучшенный Donut с анимацией */
     .donut-wrap{
       display:grid;
       grid-template-columns: 140px 1fr;
@@ -399,7 +415,6 @@
       }
     }
 
-    /* Анимация для сегментов donut */
     @keyframes segmentAppear {
       0% {
         transform: rotate(0deg) scale(0);
@@ -475,8 +490,6 @@
     }
     .muted{ color: var(--muted); }
 
-  
-    /* ===== Analytics extras ===== */
     .kpi-row{ 
       display:flex; 
       gap:10px; 
@@ -593,7 +606,6 @@
     .spark .cap{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom: 6px; }
     .spark .cap .label{ margin:0; }
 
-    /* Новые стили для кнопки добавления */
     .add-btn-container {
       position: fixed;
       right: 20px;
@@ -615,7 +627,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
     }
     
     .add-btn:hover {
@@ -626,8 +638,13 @@
     .add-btn:active {
       transform: scale(0.95);
     }
+
+    .add-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
     
-    /* Модальное окно */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -701,13 +718,11 @@
       background: rgba(0,0,0,.05);
     }
     
-    /* Новые цвета для категорий расходов */
-    .expense-low { color: #34c759; } /* Зеленый */
-    .expense-medium { color: #ff9500; } /* Оранжевый */
-    .expense-high { color: #ff3b30; } /* Красный */
-    .expense-neutral { color: var(--accent); } /* Акцентный цвет */
+    .expense-low { color: #34c759; }
+    .expense-medium { color: #ff9500; }
+    .expense-high { color: #ff3b30; }
+    .expense-neutral { color: var(--accent); }
 
-    /* Сообщения об отсутствии данных */
     .empty-state {
       text-align: center;
       padding: 40px 20px;
@@ -734,7 +749,6 @@
       margin: 0 auto;
     }
 
-    /* Улучшенная анимация sparkline */
     .sparkline-path {
       stroke-dasharray: 1000;
       stroke-dashoffset: 1000;
@@ -757,18 +771,37 @@
         opacity: 0.1;
       }
     }
+
+    .error-banner {
+      background: rgba(255, 59, 48, 0.1);
+      border: 1px solid rgba(255, 59, 48, 0.3);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .error-banner .icon {
+      font-size: 20px;
+    }
+
+    .error-banner .message {
+      flex: 1;
+      font-size: 14px;
+      color: var(--text);
+    }
   </style>
 </head>
 
 <body>
   <div id="app" class="wrap"></div>
   
-  <!-- Кнопка добавления -->
   <div class="add-btn-container">
-    <button class="add-btn" onclick="showAddModal()">+</button>
+    <button class="add-btn" id="addExpenseBtn" onclick="showAddModal()">+</button>
   </div>
 
-  <!-- Модальное окно добавления -->
   <div id="addModal" class="modal-overlay" style="display: none;">
     <div class="modal">
       <div class="modal-header">
@@ -784,11 +817,10 @@
       <div class="label" style="margin-top:10px;">Дата</div>
       <input class="input" id="modalDate" type="date" />
       
-      <button class="btn" onclick="submitExpenseModal()" style="margin-top: 20px;">Сохранить</button>
+      <button class="btn" id="submitExpenseBtn" onclick="submitExpenseModal()" style="margin-top: 20px;">Сохранить</button>
     </div>
   </div>
 
-  <!-- Навигация с 3 кнопками -->
   <div class="nav">
     <button id="tab0" onclick="showDashboard()" class="active">🏠 Сейчас</button>
     <button id="tab1" onclick="showAnalytics()">📊 Аналитика</button>
@@ -806,20 +838,17 @@ try {
     tg.expand();
     const p = tg.themeParams || {};
     
-    // Применяем тему в зависимости от цветовой схемы
     if (tg.colorScheme === 'light') {
       document.documentElement.classList.add('light-theme');
     } else {
       document.documentElement.classList.add('dark-theme');
     }
     
-    // Переопределяем цвета если они переданы
     if (p.bg_color) document.documentElement.style.setProperty('--bg', p.bg_color);
     if (p.text_color) document.documentElement.style.setProperty('--text', p.text_color);
     if (p.hint_color) document.documentElement.style.setProperty('--muted', p.hint_color);
     if (p.button_color) document.documentElement.style.setProperty('--accent', p.button_color);
     
-    // Для светлой темы Telegram тоже может передать цвета
     if (tg.colorScheme === 'light') {
       if (!p.bg_color) document.documentElement.style.setProperty('--bg', '#ffffff');
       if (!p.text_color) document.documentElement.style.setProperty('--text', '#1c1c1e');
@@ -832,7 +861,7 @@ try {
 }
 
 /* ======================================================
-   🔌 API WEBHOOKS
+   API WEBHOOKS
 ====================================================== */
 const N8N_BASE = 'https://n8n.todobotmy.ru/webhook';
 
@@ -848,33 +877,104 @@ const API = {
 const app = document.getElementById('app');
 
 /* ======================================================
-   МОДАЛЬНОЕ ОКНО
+   APP STATE
 ====================================================== */
-function showAddModal() {
-  const modal = document.getElementById('addModal');
-  const today = nowISODate();
-  document.getElementById('modalDate').value = today;
-  document.getElementById('modalAmount').value = '';
-  document.getElementById('modalDescription').value = '';
-  modal.style.display = 'flex';
+const AppState = {
+  period: 'month',
+  activeScreen: 'dashboard',
+  isLoading: false,
   
-  // Фокус на сумму
-  setTimeout(() => {
-    document.getElementById('modalAmount').focus();
-  }, 100);
-}
-
-function closeAddModal() {
-  document.getElementById('addModal').style.display = 'none';
-}
+  setPeriod(p) {
+    if (this.isLoading) return;
+    this.period = p;
+    this.refresh();
+  },
+  
+  refresh() {
+    if (this.isLoading) return;
+    
+    switch(this.activeScreen) {
+      case 'dashboard': return showDashboard();
+      case 'analytics': return showAnalytics();
+      case 'recent': return showRecent();
+    }
+  },
+  
+  setLoading(isLoading) {
+    this.isLoading = isLoading;
+    
+    const addBtn = document.getElementById('addExpenseBtn');
+    const submitBtn = document.getElementById('submitExpenseBtn');
+    const tabs = document.querySelectorAll('.nav button');
+    const periodBtns = document.querySelectorAll('.seg button');
+    
+    if (addBtn) addBtn.disabled = isLoading;
+    if (submitBtn) submitBtn.disabled = isLoading;
+    tabs.forEach(tab => tab.disabled = isLoading);
+    periodBtns.forEach(btn => btn.disabled = isLoading);
+  }
+};
 
 /* ======================================================
-   HELPERS
+   CACHE
 ====================================================== */
-function setActiveTab(i){
-  for (let k=0;k<3;k++){
-    const btn = document.getElementById('tab'+k);
-    if (btn) btn.classList.toggle('active', k===i);
+const Cache = {
+  data: {},
+  ttl: 60000,
+  
+  set(key, value) {
+    this.data[key] = {
+      value,
+      timestamp: Date.now()
+    };
+  },
+  
+  get(key) {
+    const item = this.data[key];
+    if (!item) return null;
+    
+    if (Date.now() - item.timestamp > this.ttl) {
+      delete this.data[key];
+      return null;
+    }
+    
+    return item.value;
+  },
+  
+  clear() {
+    this.data = {};
+  }
+};
+
+/* ======================================================
+   UTILITIES
+====================================================== */
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  const div = document.createElement('div');
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
+function safeUnwrapN8n(response, fallback = {}) {
+  try {
+    const data = Array.isArray(response) ? response[0] : response;
+    return data && typeof data === 'object' ? data : fallback;
+  } catch (e) {
+    console.error('unwrapN8n error:', e);
+    return fallback;
   }
 }
 
@@ -919,16 +1019,6 @@ function buildUrl(url, params){
   return u.toString();
 }
 
-function escapeHtml(str){
-  const s = String(str ?? '');
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
-}
-
-function unwrapN8n(x){
-  if (Array.isArray(x)) return x[0] ?? {};
-  return x ?? {};
-}
-
 function labelForPeriod(p){
   if (p==='today') return 'Сегодня';
   if (p==='week') return 'Неделя';
@@ -936,26 +1026,31 @@ function labelForPeriod(p){
 }
 
 function colorForIndex(i){
-  // Упорядоченная последовательность цветов
   const colors = [
-    '#2ea6ff',  // основной акцентный (синий)
-    '#34c759',  // зеленый
-    '#ff9500',  // оранжевый
-    '#af52de',  // фиолетовый
-    '#ff3b30',  // красный
-    '#5ac8fa',  // голубой
-    '#ffcc00',  // желтый
-    '#c5e1a5',  // светлый зеленый
-    '#80deea',  // бирюзовый
-    '#ff2d55'   // розовый
+    '#2ea6ff', '#34c759', '#ff9500', '#af52de', '#ff3b30',
+    '#5ac8fa', '#ffcc00', '#c5e1a5', '#80deea', '#ff2d55',
+    '#30d158', '#bf5af2', '#ff453a', '#ffd60a', '#64d2ff'
   ];
   return colors[i % colors.length];
 }
 
-// Улучшенная функция для создания donut с сегментами
+function getExpenseColorClass(amount) {
+  const numAmount = Number(amount) || 0;
+  if (numAmount < 1000) return 'expense-low';
+  if (numAmount < 5000) return 'expense-medium';
+  return 'expense-high';
+}
+
 function buildDonutSegments(parts) {
-  const total = parts.reduce((s, p) => s + (Number(p.amount) || 0), 0) || 0;
-  if (!total) return '';
+  if (!parts || !Array.isArray(parts) || parts.length === 0) {
+    return '';
+  }
+  
+  const total = parts.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+  
+  if (total <= 0) {
+    return '';
+  }
   
   let accumulatedAngle = 0;
   const svgParts = [];
@@ -963,18 +1058,20 @@ function buildDonutSegments(parts) {
   for (let i = 0; i < parts.length; i++) {
     const p = parts[i];
     const amount = Number(p.amount) || 0;
+    
+    if (amount <= 0) continue;
+    
     const percentage = amount / total;
     const angle = percentage * 360;
     
-    // Создаем круговой сегмент
+    if (percentage < 0.01) continue;
+    
     const startAngle = accumulatedAngle;
     const endAngle = startAngle + angle;
     
-    // Преобразуем углы в радианы
     const startRad = (startAngle - 90) * Math.PI / 180;
     const endRad = (endAngle - 90) * Math.PI / 180;
     
-    // Рассчитываем координаты для дуги
     const radius = 70;
     const innerRadius = 30;
     
@@ -998,7 +1095,6 @@ function buildDonutSegments(parts) {
       `Z`
     ].join(' ');
     
-    // Анимация с задержкой для каждого сегмента
     const animationDelay = (i * 0.1) + 0.2;
     
     svgParts.push(
@@ -1038,32 +1134,25 @@ function sparklineSvg(points){
   `;
 }
 
-// Функция для определения класса цвета на основе суммы
-function getExpenseColorClass(amount) {
-  const numAmount = Number(amount) || 0;
-  if (numAmount < 1000) return 'expense-low';
-  if (numAmount < 5000) return 'expense-medium';
-  return 'expense-high';
-}
-
 async function apiFetch(url, payload={}, opts={}){
   const method = (opts.method || 'POST').toUpperCase();
   const initData = tg?.initData || '';
-  const userId = tg?.initDataUnsafe?.user?.id || '';
+  const userId = tg?.initDataUnsafe?.user?.id;
+
+  if (!userId) {
+    throw new Error('User not authenticated. Please restart the app from Telegram.');
+  }
 
   const finalUrl = method === 'GET' ? buildUrl(url, {
     ...payload,
-    telegram_user_id: userId
+    telegram_user_id: String(userId)
   }) : url;
 
   const headers = {
     'Authorization': initData,
-    'X-Telegram-InitData': initData
+    'X-Telegram-InitData': initData,
+    'Content-Type': 'application/json'
   };
-
-  if (method !== 'GET') {
-    headers['Content-Type'] = 'application/json';
-  }
 
   const options = {
     method,
@@ -1071,7 +1160,7 @@ async function apiFetch(url, payload={}, opts={}){
     body: method === 'GET' ? undefined : JSON.stringify({
       ...payload,
       initData,
-      telegram_user_id: userId
+      telegram_user_id: String(userId)
     })
   };
 
@@ -1079,12 +1168,18 @@ async function apiFetch(url, payload={}, opts={}){
     const res = await fetch(finalUrl, options);
     
     if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`HTTP ${res.status}: ${text || 'Request failed'}`);
+      let errorMessage;
+      try {
+        const errorData = await res.json();
+        errorMessage = errorData.message || errorData.error || `HTTP ${res.status}`;
+      } catch {
+        errorMessage = await res.text() || `HTTP ${res.status}`;
+      }
+      throw new Error(errorMessage);
     }
 
     const contentType = res.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
+    if (contentType?.includes('application/json')) {
       return await res.json();
     }
     
@@ -1095,18 +1190,27 @@ async function apiFetch(url, payload={}, opts={}){
       return { raw: text };
     }
   } catch (error) {
-    console.error('API fetch error:', error);
+    console.error('API fetch error:', {
+      url: finalUrl,
+      method,
+      error: error.message
+    });
     throw error;
   }
 }
 
 /* ======================================================
-   STATE
+   UI HELPERS
 ====================================================== */
-let period = 'month';
-let activeScreen = 'dashboard';
+function setActiveTab(i){
+  for (let k=0;k<3;k++){
+    const btn = document.getElementById('tab'+k);
+    if (btn) btn.classList.toggle('active', k===i);
+  }
+}
 
 function periodButtons(){
+  const { period } = AppState;
   return `
     <div class="seg" role="tablist" aria-label="Период">
       <button class="${period==='today'?'active':''}" onclick="setPeriod('today')">Сегодня</button>
@@ -1117,19 +1221,115 @@ function periodButtons(){
 }
 
 function setPeriod(p){
-  period = p;
-  if (activeScreen === 'dashboard') showDashboard();
-  else if (activeScreen === 'analytics') showAnalytics();
-  else if (activeScreen === 'recent') showRecent();
+  AppState.setPeriod(p);
+}
+
+function errorCard(message, isNetworkError = false) {
+  const icon = isNetworkError ? '🌐' : '❌';
+  const title = isNetworkError ? 'Нет связи с сервером' : 'Ошибка загрузки';
+  
+  return `
+    <div class="card">
+      <div style="font-size: 16px; font-weight: 700;">${icon} ${title}</div>
+      <div class="sub">${escapeHtml(message)}</div>
+      <div class="divider"></div>
+      <button class="btn" onclick="AppState.refresh()">Повторить</button>
+    </div>
+  `;
 }
 
 /* ======================================================
-   SCREEN: DASHBOARD (GET)
+   MODAL
+====================================================== */
+function showAddModal() {
+  const modal = document.getElementById('addModal');
+  modal.style.display = 'flex';
+  
+  requestAnimationFrame(() => {
+    document.getElementById('modalDate').value = nowISODate();
+    document.getElementById('modalAmount').value = '';
+    document.getElementById('modalDescription').value = '';
+    
+    const amountInput = document.getElementById('modalAmount');
+    if (amountInput) {
+      setTimeout(() => amountInput.focus(), 100);
+    }
+  });
+}
+
+function closeAddModal() {
+  document.getElementById('addModal').style.display = 'none';
+}
+
+const submitExpenseModalDebounced = debounce(async function() {
+  const amount = document.getElementById('modalAmount')?.value;
+  const description = document.getElementById('modalDescription')?.value?.trim() || '';
+  const dateStr = document.getElementById('modalDate')?.value;
+
+  if (!amount || Number(amount) <= 0) {
+    tg?.showAlert('Введите корректную сумму');
+    return;
+  }
+
+  AppState.setLoading(true);
+
+  try {
+    const selectedDate = new Date(dateStr + 'T00:00:00');
+    const now = new Date();
+    
+    const finalDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate(),
+      now.getHours(),
+      now.getMinutes(),
+      now.getSeconds()
+    );
+    
+    const dateFormatted = finalDate.toISOString();
+
+    await apiFetch(API.ADD_EXPENSE, { 
+      amount: parseFloat(amount), 
+      description, 
+      date: dateFormatted
+    }, { 
+      method: 'POST' 
+    });
+
+    tg?.HapticFeedback?.notificationOccurred('success');
+    
+    if (tg?.showPopup) {
+      tg.showPopup({
+        title: 'Готово',
+        message: 'Трата сохранена',
+        buttons: [{ type: 'ok' }]
+      });
+    }
+
+    closeAddModal();
+    Cache.clear();
+    AppState.refresh();
+  } catch(e) {
+    console.error('Submit error:', e);
+    tg?.HapticFeedback?.notificationOccurred('error');
+    tg?.showAlert(`Ошибка: ${e.message || 'Не удалось сохранить'}`);
+  } finally {
+    AppState.setLoading(false);
+  }
+}, 300);
+
+function submitExpenseModal() {
+  submitExpenseModalDebounced();
+}
+
+/* ======================================================
+   SCREEN: DASHBOARD
 ====================================================== */
 async function showDashboard(){
   try {
-    activeScreen = 'dashboard';
+    AppState.activeScreen = 'dashboard';
     setActiveTab(0);
+    AppState.setLoading(true);
 
     app.innerHTML = `
       <div class="topbar">
@@ -1139,13 +1339,20 @@ async function showDashboard(){
       ${loadingCard('Загрузка...')}
     `;
 
-    const params = {
-      period,
-      date: nowISODate(),
-      month: monthKey()
-    };
+    const cacheKey = `dashboard_${AppState.period}_${nowISODate()}`;
+    let data = Cache.get(cacheKey);
 
-    const data = unwrapN8n(await apiFetch(API.DASHBOARD, params, { method: 'GET' }));
+    if (!data) {
+      const params = {
+        period: AppState.period,
+        date: nowISODate(),
+        month: monthKey()
+      };
+
+      data = safeUnwrapN8n(await apiFetch(API.DASHBOARD, params, { method: 'GET' }));
+      Cache.set(cacheKey, data);
+    }
+
     const currency = data.currency || '₽';
     const budgets = Array.isArray(data.budgets) ? data.budgets : [];
     const insight = data.insight || null;
@@ -1157,7 +1364,7 @@ async function showDashboard(){
       </div>
 
       <div class="card">
-        <div class="label">Потрачено (${period==='today'?'сегодня':period==='week'?'за неделю':'за месяц'})</div>
+        <div class="label">Потрачено (${AppState.period==='today'?'сегодня':AppState.period==='week'?'за неделю':'за месяц'})</div>
         <div class="big">${fmtMoney(data.spent, currency)}</div>
         ${data.forecast !== undefined ? `<div class="sub">Прогноз: ${fmtMoney(data.forecast, currency)}</div>` : ''}
       </div>
@@ -1218,30 +1425,32 @@ async function showDashboard(){
         ` : ''
       }
     `;
-  } catch (e){
+  } catch (e) {
+    console.error('Dashboard error:', e);
+    const isNetworkError = e.message.includes('fetch') || e.message.includes('network') || e.message.includes('authenticated');
+    
     app.innerHTML = `
       <div class="topbar">
         <div class="app-title">Расходы</div>
         ${periodButtons()}
       </div>
-      <div class="card">
-        <div style="font-size: 16px; font-weight: 700;">Ошибка загрузки</div>
-        <div class="sub">${escapeHtml(String(e.message || e))}</div>
-        <div class="divider"></div>
-        <button class="btn" onclick="showDashboard()">Повторить</button>
-      </div>
+      ${errorCard(e.message, isNetworkError)}
     `;
+    
     tg?.HapticFeedback?.notificationOccurred('error');
+  } finally {
+    AppState.setLoading(false);
   }
 }
 
 /* ======================================================
-   SCREEN: ANALYTICS (GET)
+   SCREEN: ANALYTICS
 ====================================================== */
 async function showAnalytics(){
   try {
-    activeScreen = 'analytics';
+    AppState.activeScreen = 'analytics';
     setActiveTab(1);
+    AppState.setLoading(true);
 
     app.innerHTML = `
       <div class="topbar">
@@ -1251,15 +1460,22 @@ async function showAnalytics(){
       ${loadingCard('Загрузка...')}
     `;
 
-    const raw = await apiFetch(API.ANALYTICS, { 
-      period, 
-      date: nowISODate(), 
-      month: monthKey() 
-    }, { 
-      method: 'GET' 
-    });
-    
-    const data = unwrapN8n(raw);
+    const cacheKey = `analytics_${AppState.period}_${nowISODate()}`;
+    let data = Cache.get(cacheKey);
+
+    if (!data) {
+      const raw = await apiFetch(API.ANALYTICS, { 
+        period: AppState.period, 
+        date: nowISODate(), 
+        month: monthKey() 
+      }, { 
+        method: 'GET' 
+      });
+      
+      data = safeUnwrapN8n(raw);
+      Cache.set(cacheKey, data);
+    }
+
     const currency = data.currency || '₽';
     const catsRaw = Array.isArray(data.categories) ? data.categories : [];
     const timeline = Array.isArray(data.timeline) ? data.timeline : [];
@@ -1281,7 +1497,6 @@ async function showAnalytics(){
     const restSum = catsSorted.slice(topN).reduce((s,c)=> s + c.amount, 0);
     if (restSum > 0) catsTop.push({ name: 'прочее', amount: restSum });
 
-    // Применяем цвета в правильном порядке
     const donutParts = catsTop.map((c, i) => ({ 
       ...c, 
       color: colorForIndex(i) 
@@ -1307,7 +1522,7 @@ async function showAnalytics(){
       </div>
 
       <div class="card">
-        <div class="label">Итого • ${labelForPeriod(period).toLowerCase()}</div>
+        <div class="label">Итого • ${labelForPeriod(AppState.period).toLowerCase()}</div>
         <div class="big">${fmtMoney(total, currency)}</div>
 
         ${
@@ -1362,7 +1577,7 @@ async function showAnalytics(){
           <div class="empty-state" style="padding: 20px 0;">
             <div class="empty-icon">📈</div>
             <div class="empty-title">Нет данных за период</div>
-            <div class="empty-description">Добавьте траты за ${labelForPeriod(period).toLowerCase()}, чтобы увидеть статистику</div>
+            <div class="empty-description">Добавьте траты за ${labelForPeriod(AppState.period).toLowerCase()}, чтобы увидеть статистику</div>
           </div>
           ` : ''
         }
@@ -1422,85 +1637,20 @@ async function showAnalytics(){
       }
     `;
   } catch(e){
+    console.error('Analytics error:', e);
+    const isNetworkError = e.message.includes('fetch') || e.message.includes('network') || e.message.includes('authenticated');
+    
     app.innerHTML = `
       <div class="topbar">
         <div class="app-title">Аналитика</div>
         ${periodButtons()}
       </div>
-      <div class="card">
-        <div style="font-size: 16px; font-weight: 700;">Аналитика недоступна</div>
-        <div class="sub">${escapeHtml(String(e.message || e))}</div>
-        <button class="btn" onclick="showAnalytics()">Повторить</button>
-      </div>
+      ${errorCard(e.message, isNetworkError)}
     `;
-  }
-}
-
-/* ======================================================
-   ДОБАВЛЕНИЕ ТРАТЫ ЧЕРЕЗ МОДАЛЬНОЕ ОКНО
-====================================================== */
-async function submitExpenseModal(){
-  const amount = document.getElementById('modalAmount')?.value;
-  const description = document.getElementById('modalDescription')?.value || '';
-  const dateStr = document.getElementById('modalDate')?.value || nowISODate();
-
-  if (!amount || Number(amount) <= 0){
-    tg?.showAlert('Введите сумму');
-    return;
-  }
-
-  try{
-    // Форматируем дату в требуемый формат: 2026-01-06T19:25:45.844027
-    const now = new Date();
-    const selectedDate = new Date(dateStr);
     
-    // Создаем дату с выбранной датой и текущим временем
-    const finalDate = new Date(
-      selectedDate.getFullYear(),
-      selectedDate.getMonth(),
-      selectedDate.getDate(),
-      now.getHours(),
-      now.getMinutes(),
-      now.getSeconds(),
-      now.getMilliseconds()
-    );
-    
-    // Форматируем в ISO строку и добавляем микросекунды
-    const isoString = finalDate.toISOString();
-    // Заменяем 'Z' на микросекунды (6 цифр)
-    const dateFormatted = isoString.replace('Z', 
-      String(finalDate.getMilliseconds()).padStart(3, '0') + '000'
-    ).replace('.000Z', '.000000');
-
-    await apiFetch(API.ADD_EXPENSE, { 
-      amount: Number(amount), 
-      description, 
-      date: dateFormatted
-    }, { 
-      method: 'POST' 
-    });
-
-    tg?.HapticFeedback?.notificationOccurred('success');
-    
-    if (tg?.showPopup) {
-      tg.showPopup({
-        title: 'Готово',
-        message: 'Трата сохранена',
-        buttons: [{ type: 'ok' }]
-      });
-    } else {
-      alert('Трата сохранена');
-    }
-
-    closeAddModal();
-    
-    // Обновляем текущий экран
-    if (activeScreen === 'dashboard') showDashboard();
-    else if (activeScreen === 'analytics') showAnalytics();
-    else if (activeScreen === 'recent') showRecent();
-  } catch(e){
     tg?.HapticFeedback?.notificationOccurred('error');
-    tg?.showAlert(`Ошибка: ${String(e.message || e)}`);
+  } finally {
+    AppState.setLoading(false);
   }
 }
 
@@ -1509,8 +1659,9 @@ async function submitExpenseModal(){
 ====================================================== */
 async function showRecent(){
   try {
-    activeScreen = 'recent';
+    AppState.activeScreen = 'recent';
     setActiveTab(2);
+    AppState.setLoading(true);
 
     app.innerHTML = `
       <div class="topbar">
@@ -1520,14 +1671,20 @@ async function showRecent(){
       ${loadingCard('Загрузка...')}
     `;
 
-    const data = unwrapN8n(await apiFetch(API.RECENT, { 
-      period, 
-      date: nowISODate(), 
-      month: monthKey(), 
-      limit: 25 
-    }, { 
-      method: 'POST' 
-    }));
+    const cacheKey = `recent_${AppState.period}_${nowISODate()}`;
+    let data = Cache.get(cacheKey);
+
+    if (!data) {
+      data = safeUnwrapN8n(await apiFetch(API.RECENT, { 
+        period: AppState.period, 
+        date: nowISODate(), 
+        month: monthKey(), 
+        limit: 25 
+      }, { 
+        method: 'POST' 
+      }));
+      Cache.set(cacheKey, data);
+    }
     
     const currency = data.currency || '₽';
     const items = Array.isArray(data.expenses) ? data.expenses : (Array.isArray(data) ? data : []);
@@ -1585,17 +1742,20 @@ async function showRecent(){
       </div>
     `;
   } catch(e){
+    console.error('Recent error:', e);
+    const isNetworkError = e.message.includes('fetch') || e.message.includes('network') || e.message.includes('authenticated');
+    
     app.innerHTML = `
       <div class="topbar">
         <div class="app-title">Последние траты</div>
         ${periodButtons()}
       </div>
-      <div class="card">
-        <div style="font-size: 16px; font-weight: 700;">Не удалось загрузить</div>
-        <div class="sub">${escapeHtml(String(e.message || e))}</div>
-        <button class="btn" onclick="showRecent()">Повторить</button>
-      </div>
+      ${errorCard(e.message, isNetworkError)}
     `;
+    
+    tg?.HapticFeedback?.notificationOccurred('error');
+  } finally {
+    AppState.setLoading(false);
   }
 }
 
@@ -1624,31 +1784,50 @@ async function deleteExpense(id){
   const shouldDelete = await confirmDelete();
   if (!shouldDelete) return;
   
+  AppState.setLoading(true);
+  
   try {
     await apiFetch(API.DELETE_EXPENSE, { id }, { method: 'POST' });
     tg?.HapticFeedback?.notificationOccurred('success');
+    Cache.clear();
     showRecent();
   } catch(e) {
+    console.error('Delete error:', e);
     tg?.HapticFeedback?.notificationOccurred('error');
-    tg?.showAlert(`Ошибка: ${String(e.message || e)}`);
+    tg?.showAlert(`Ошибка: ${e.message || 'Не удалось удалить'}`);
+  } finally {
+    AppState.setLoading(false);
   }
 }
 
 /* ======================================================
    INIT
 ====================================================== */
-// Запускаем приложение
 try {
-  showDashboard();
+  if (!tg?.initDataUnsafe?.user?.id) {
+    app.innerHTML = `
+      <div class="card">
+        <div class="error-banner">
+          <div class="icon">⚠️</div>
+          <div class="message">
+            <strong>Ошибка авторизации</strong><br>
+            Пожалуйста, запустите приложение из Telegram
+          </div>
+        </div>
+      </div>
+    `;
+  } else {
+    showDashboard();
+  }
 } catch (e) {
+  console.error('App initialization error:', e);
   app.innerHTML = `
     <div class="card">
       <div style="font-size: 16px; font-weight: 700;">Ошибка запуска</div>
       <div class="sub">${escapeHtml(String(e.message || e))}</div>
-      <button class="btn" onclick="showDashboard()">Перезапустить</button>
+      <button class="btn" onclick="location.reload()">Перезапустить</button>
     </div>
   `;
-  console.error('App initialization error:', e);
 }
 </script>
 </body>
